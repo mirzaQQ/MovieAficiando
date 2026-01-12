@@ -33,7 +33,7 @@ public class Movies {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("gui/MovieInfo.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         Stage stage = new Stage();
-        stage.setTitle("Add movie!");
+        stage.setTitle("Add movie");
         stage.setScene(scene);
         stage.show();
 
