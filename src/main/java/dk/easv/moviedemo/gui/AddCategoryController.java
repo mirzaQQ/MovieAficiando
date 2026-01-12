@@ -1,5 +1,6 @@
 package dk.easv.moviedemo.gui;
 
+import dk.easv.moviedemo.bll.Checker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -16,9 +17,10 @@ public class AddCategoryController {
 
     @FXML
     private Button btnCancelId;
-
+    Checker checker = new Checker();
     public void btnAddOnClick(ActionEvent actionEvent) {
         String category = txtCategory.getText();
+        checker.addCategory(category);
         lblFeedback.setText("Adding category: " + category);
     }
 

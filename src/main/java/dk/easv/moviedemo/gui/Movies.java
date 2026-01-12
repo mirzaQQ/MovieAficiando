@@ -55,46 +55,6 @@ public class Movies {
         stage.show();
     }
 
-
-    public void PlayMovie() throws IOException {
-        /**
-        startCinema();
-        Media media = new Media(new File().toURI().toString());
-        mediaPlayer = new MediaPlayer(media);
-        MediaView mediaView = new MediaView(mediaPlayer);
-
-
-
-
-        /
-        String path = "video.mp4";
-        Media media = new Media(new File(path).toURI().toString());
-
-        mediaPlayer = new MediaPlayer(media);
-        MediaView mediaView = new MediaView(mediaPlayer);
-
-
-        Button playBtn = new Button("Play");
-        Button pauseBtn = new Button("Pause");
-        Button stopBtn = new Button("Stop");
-
-        playBtn.setOnAction(e -> mediaPlayer.play());
-        pauseBtn.setOnAction(e -> mediaPlayer.pause());
-        stopBtn.setOnAction(e -> mediaPlayer.stop());
-
-        HBox controls = new HBox(10, playBtn, pauseBtn, stopBtn);
-
-        BorderPane root = new BorderPane();
-        root.setCenter(mediaView);
-        root.setBottom(controls);
-
-        Scene scene = new Scene(root, 800, 500);
-        Stage stage = new Stage();
-        stage.setTitle("JavaFX Media Player");
-        stage.setScene(scene);
-        stage.show();*/
-
-    }
     public void startCinema() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("gui/CinemaView.fxml"));
         Scene scene = new Scene(fxmlLoader.load());

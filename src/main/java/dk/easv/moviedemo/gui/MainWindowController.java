@@ -39,12 +39,6 @@ public class MainWindowController {
     }
 
     public void btnPlayMovie(ActionEvent actionEvent) throws IOException {
-       /** MediaPlayer mediaPlayer;
-        String path = "video.mp4";
-        Media media = new Media(new File(path).toURI().toString());
-
-        mediaPlayer = new MediaPlayer(media);
-        MediaView mediaView = new MediaView(mediaPlayer);*/
 
         movieOps.startCinema();
     }
