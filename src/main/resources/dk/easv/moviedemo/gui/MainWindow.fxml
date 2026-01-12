@@ -15,44 +15,44 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="586.0" prefWidth="1111.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.moviedemo.gui.MainWindowController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="584.0" prefWidth="978.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.moviedemo.gui.MainWindowController">
     <top>
         <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" BorderPane.alignment="CENTER">
             <padding>
                 <Insets top="10.0" />
             </padding>
             <children>
-            <AnchorPane prefHeight="90.0" prefWidth="1113.0">
+            <AnchorPane prefHeight="90.0" prefWidth="1113.0" HBox.hgrow="ALWAYS">
                <children>
-                      <Label layoutX="7.0" layoutY="-8.0" prefHeight="31.0" prefWidth="56.0" text="Title:">
+                      <Label layoutX="8.0" layoutY="-8.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="31.0" prefWidth="78.0" text="Title:">
                      <font>
                         <Font name="System Bold" size="26.0" />
                      </font>
                   </Label>
-                      <TextField fx:id="txtTitleFilter" layoutX="62.0" layoutY="-4.0" promptText="Search title..." />
-                      <Label fx:id="cmbCategory" layoutX="249.0" layoutY="-9.0" prefHeight="31.0" prefWidth="110.0" text="Category:">
+                      <TextField fx:id="txtTitleFilter" layoutX="72.0" layoutY="-2.0" promptText="Search title..." />
+                      <Label fx:id="cmbCategory" layoutX="249.0" layoutY="-9.0" prefHeight="38.0" prefWidth="133.0" text="Category:">
                      <font>
                         <Font name="System Bold" size="26.0" />
                      </font>
                   </Label>
-                      <Label layoutX="565.0" layoutY="-8.0" prefHeight="31.0" prefWidth="118.0" text="Min IMDB:">
+                      <Label layoutX="565.0" layoutY="-8.0" prefHeight="38.0" prefWidth="133.0" text="Min IMDB:">
                      <font>
                         <Font name="System Bold" size="26.0" />
                      </font>
                   </Label>
-                      <Slider fx:id="sliderImdb" layoutX="680.0" layoutY="-6.0" majorTickUnit="1.0" max="10.0" showTickLabels="true" showTickMarks="true" value="5.0" />
-                      <Button fx:id="btnClearFilters" layoutX="1016.0" layoutY="-2.0" mnemonicParsing="false" text="Clear Filters">
+                      <Slider fx:id="sliderImdb" layoutX="697.0" layoutY="-5.0" majorTickUnit="1.0" max="10.0" showTickLabels="true" showTickMarks="true" value="5.0" />
+                      <Button fx:id="btnClearFilters" layoutX="875.0" layoutY="-3.0" mnemonicParsing="false" text="Clear Filters">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font></Button>
-                  <ComboBox layoutX="365.0" layoutY="-4.0" prefWidth="150.0" />
+                  <ComboBox layoutX="370.0" layoutY="-3.0" prefWidth="150.0" />
                </children>
             </AnchorPane>
             </children>
         </HBox>
     </top>
     <center>
-        <TableView fx:id="movieTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <TableView fx:id="movieTable" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="366.0" prefWidth="581.0" BorderPane.alignment="CENTER">
             <columns>
                 <TableColumn fx:id="colTitle" prefWidth="200.0" text="Title" />
                 <TableColumn fx:id="colImdb" text="IMDB" />
@@ -62,16 +62,25 @@
         </TableView>
     </center>
     <left>
-        <VBox maxWidth="200.0" prefHeight="629.0" prefWidth="148.0" spacing="10.0" BorderPane.alignment="TOP_LEFT">
+        <VBox maxWidth="212.0" prefHeight="364.0" prefWidth="212.0" spacing="10.0" BorderPane.alignment="TOP_LEFT">
             <padding>
                 <Insets top="10.0" />
             </padding>
             <children>
-                <Label prefHeight="15.0" prefWidth="68.0" text="Categories:">
+                <Label prefHeight="17.0" prefWidth="83.0" text="Categories:">
                <font>
                   <Font name="System Bold" size="12.0" />
-               </font></Label>
-                <ListView fx:id="lstCategories" prefHeight="300.0" prefWidth="200.0" />
+               </font>
+               <padding>
+                  <Insets left="3.0" />
+               </padding></Label>
+                <ListView fx:id="lstCategories" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="259.0" prefWidth="213.0" VBox.vgrow="NEVER">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets left="3.0" />
+               </VBox.margin></ListView>
                 <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                     <children>
                         <Button mnemonicParsing="false" onAction="#btnAddCategory" text="Add">
@@ -88,6 +97,9 @@
                     </padding>
                 </HBox>
             </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
         </VBox>
     </left>
     <bottom>
