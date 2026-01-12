@@ -33,17 +33,13 @@
             <Insets top="25.0" />
          </VBox.margin>
       </HBox>
-      <HBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="35.0" prefWidth="299.0">
+      <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="35.0" prefWidth="283.0">
          <children>
-            <Label fx:id="lblFeedback" text="&lt;&gt;">
+            <Label fx:id="lblFeedback" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="23.0" prefWidth="268.0" text="&lt;&gt;">
                <padding>
                   <Insets left="6.0" top="6.0" />
                </padding></Label>
-            <Button fx:id="btnCancelId" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btnCancelOnClick" text="Cancel">
-               <HBox.margin>
-                  <Insets left="247.0" />
-               </HBox.margin>
-            </Button>
+            <Button fx:id="btnCancelId" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btnCancelOnClick" text="Cancel" />
          </children>
       </HBox>
    </children>
