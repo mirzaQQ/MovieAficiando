@@ -1,7 +1,6 @@
 package dk.easv.moviedemo.bll;
 
-import dk.easv.moviedemo.dal.CategoryDAO;
-import dk.easv.moviedemo.dal.CategoryDAO;
+import dk.easv.moviedemo.dal.dao.CategoryDAO;
 
 import java.sql.SQLException;
 

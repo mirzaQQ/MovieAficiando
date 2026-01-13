@@ -1,4 +1,6 @@
-package dk.easv.moviedemo.dal;
+package dk.easv.moviedemo.dal.dao;
+
+import dk.easv.moviedemo.dal.ConnectionManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
