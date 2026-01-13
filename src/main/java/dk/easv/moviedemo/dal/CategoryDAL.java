@@ -5,22 +5,36 @@ import com.microsoft.sqlserver.jdbc.SQLServerException;
 import java.sql.*;
 
 public class CategoryDAL {
+
     ConnectionManager conMan = new ConnectionManager();
-    public void addCategory(String category) {
 
-        try(Connection con = (Connection) conMan.getConnection()) {
-            Statement stmt = con.createStatement();
-            String sql = "INSERT INTO Category (name) VALUES (?)";
-            PreparedStatement pstmt = con.prepareStatement(sql);
-            pstmt.setString(1, category);
-            pstmt.executeUpdate();
-            pstmt.close();
-            stmt.close();
+    //checks if a category with this name already exist
+    public boolean checkCategory(String categoryName) throws SQLException {
+        String sql = "SELECT * FROM Category WHERE name = ?";
 
+        try (Connection con = conMan.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, categoryName);
+            ResultSet rs = ps.executeQuery();
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            return rs.next();
         }
+    }
 
+    //Adds a new category if it does not already exist
+    public void addCategory(String category) throws SQLException {
+        if (checkCategory(category)) {
+            throw new SQLException("Category already exists");
+        }
+        String sql = "INSERT INTO Category (name) VALUES (?)";
+        try (Connection con = conMan.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, category);
+            ps.executeUpdate();
+        }
     }
 }
+
+
+
+
