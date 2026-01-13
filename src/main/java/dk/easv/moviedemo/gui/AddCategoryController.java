@@ -20,8 +20,12 @@ public class AddCategoryController {
     Checker checker = new Checker();
     public void btnAddOnClick(ActionEvent actionEvent) {
         String category = txtCategory.getText();
+        try {
         checker.addCategory(category);
         lblFeedback.setText("Adding category: " + category);
+        } catch (Exception e) {
+        lblFeedback.setText("Category already exists");
+        }
     }
 
     public void btnCancelOnClick(ActionEvent actionEvent) {
