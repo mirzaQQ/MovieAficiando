@@ -1,22 +1,15 @@
-package dk.easv.moviedemo.gui;
+package dk.easv.movieaficionado.gui;
 
-import dk.easv.moviedemo.MainApplication;
+import dk.easv.movieaficionado.MainApplication;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 
-import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 
 
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 
 public class Movies {
     private MediaPlayer mediaPlayer;

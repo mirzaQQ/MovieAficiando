@@ -1,4 +1,4 @@
-package dk.easv.moviedemo.gui;
+package dk.easv.movieaficionado.gui;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

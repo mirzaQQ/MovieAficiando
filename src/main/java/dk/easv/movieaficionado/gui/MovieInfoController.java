@@ -1,13 +1,11 @@
-package dk.easv.moviedemo.gui;
+package dk.easv.movieaficionado.gui;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import dk.easv.moviedemo.bll.*;
-
-import java.io.File;
+import dk.easv.movieaficionado.bll.*;
 
 public class MovieInfoController {
     @FXML

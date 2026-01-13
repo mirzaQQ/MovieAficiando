@@ -1,4 +1,4 @@
-package dk.easv.moviedemo.bll;
+package dk.easv.movieaficionado.bll;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;

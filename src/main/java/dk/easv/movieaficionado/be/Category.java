@@ -1,4 +1,4 @@
-package dk.easv.moviedemo.be;
+package dk.easv.movieaficionado.be;
 
 public class Category {
     private int id;

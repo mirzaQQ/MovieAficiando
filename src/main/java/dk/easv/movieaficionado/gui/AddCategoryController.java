@@ -1,6 +1,6 @@
-package dk.easv.moviedemo.gui;
+package dk.easv.movieaficionado.gui;
 
-import dk.easv.moviedemo.bll.Checker;
+import dk.easv.movieaficionado.bll.Checker;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

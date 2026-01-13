@@ -1,4 +1,4 @@
-package dk.easv.moviedemo;
+package dk.easv.movieaficionado;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

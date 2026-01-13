@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>dk.easv</groupId>
-    <artifactId>MovieDemo</artifactId>
+    <artifactId>MovieAficionado</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>MovieDemo</name>
 
@@ -65,7 +65,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>dk.easv.moviedemo/dk.easv.moviedemo.MainApplication</mainClass>
+                            <mainClass>dk.easv.moviedemo/dk.easv.movieaficionado.MainApplication</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
