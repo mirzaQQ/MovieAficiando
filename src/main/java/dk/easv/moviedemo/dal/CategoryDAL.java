@@ -8,7 +8,7 @@ public class CategoryDAL {
     ConnectionManager conMan = new ConnectionManager();
     public void addCategory(String category) {
 
-        try(Connection con = conMan.getConnection()) {
+        try(Connection con = (Connection) conMan.getConnection()) {
             Statement stmt = con.createStatement();
             String sql = "INSERT INTO Category (name) VALUES (?)";
             PreparedStatement pstmt = con.prepareStatement(sql);
