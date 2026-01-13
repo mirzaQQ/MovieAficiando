@@ -1,15 +1,17 @@
 package dk.easv.moviedemo.bll;
 
-import dk.easv.moviedemo.dal.CategoryDAL;
+import dk.easv.moviedemo.dal.CategoryDAO;
+import dk.easv.moviedemo.dal.CategoryDAO;
+
 import java.sql.SQLException;
 
 
 public class Checker {
-    CategoryDAL categoryDAL = new CategoryDAL();
+    CategoryDAO categoryDAO = new CategoryDAO();
     public void addCategory(String category) throws SQLException {
         /**In this we should create the logic that can check whether
          * the category exits or not. For that we will need another method in CategoryDAL
          */
-        categoryDAL.addCategory(category);
+        categoryDAO.addCategory(category);
     }
 }

@@ -1,18 +1,17 @@
 package dk.easv.moviedemo.dal;
 
-import dk.easv.moviedemo.be.Movie;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class MovieDAL {
+public class MovieDAO {
 
     private final ConnectionManager conMan = new ConnectionManager();
 
-    public void addMovie(String Title, double imbdRating, int catergoryID, String categoryid, String filepath) {
+    public void addMovie(String Title, double imbdRating, double personalRating, int catergoryID, String categoryID, String filepath) {
 
         String sql = """
-            INSERT INTO Movie (title, imdbRating, categoryId, filelink)
+            INSERT INTO Movie (title, imdbRating, personalRating, categoryId, filelink)
             VALUES (?, ?, ?, ?)
             """;
 
@@ -21,8 +20,9 @@ public class MovieDAL {
 
             pstmt.setString(1, Title);
             pstmt.setDouble(2, imbdRating);
-            pstmt.setInt(3, catergoryID);
-            pstmt.setString(4, filepath);
+            pstmt.setDouble(3, personalRating);
+            pstmt.setInt(4, catergoryID);
+            pstmt.setString(5, filepath);
 
             pstmt.executeUpdate();
 
