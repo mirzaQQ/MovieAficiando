@@ -32,4 +32,5 @@ public class MovieDAO {
             throw new RuntimeException("Could not add movie", e);
         }
     }
+
 }
