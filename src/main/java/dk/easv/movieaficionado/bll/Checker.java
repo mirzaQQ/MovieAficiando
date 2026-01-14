@@ -7,15 +7,15 @@ import dk.easv.movieaficionado.dal.dao.MovieDAO;
 import java.sql.SQLException;
 
 public class Checker {
-    CategoryDAO categoryDAL = new CategoryDAO();
+    CategoryDAO categoryDAO = new CategoryDAO();
     MovieDAO movieDAO = new MovieDAO();
 
     public void addCategory(String category) throws SQLException {
-        /**
-         * In this we should create the logic that can check whether
-         * the category exits or not. For that we will need another method in CategoryDAL
-         */
-        categoryDAL.addCategory(category);
+    //Checks if the category already exist before inserting
+        if (categoryDAO.exists(category)) {
+            throw new SQLException("Category already exists");
+        }
+        categoryDAO.addCategory(category);
 
     }
 

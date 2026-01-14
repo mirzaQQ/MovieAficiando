@@ -97,4 +97,19 @@ public class CategoryDAO {
 
         }
     }
+    // Returns true if a category with this name already exists
+    public boolean exists(String name) throws SQLException {
+
+        String sql = "SELECT 1 FROM Category WHERE name = ?";
+
+        try (Connection con = conMan.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+
+            return rs.next();
+        }
+    }
+
 }
