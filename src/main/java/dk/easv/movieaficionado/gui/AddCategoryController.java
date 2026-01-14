@@ -15,16 +15,25 @@ public class AddCategoryController {
     @FXML
     private Label lblFeedback; //if exists "Added successfully" if not "Already exists"
 
+    private Runnable onCategoryAdded;
+
+    public void setOnCategoryAdded(Runnable onCategoryAdded) {
+        this.onCategoryAdded = onCategoryAdded;
+    }
+
     @FXML
     private Button btnCancelId;
     Checker checker = new Checker();
     public void btnAddOnClick(ActionEvent actionEvent) {
         String category = txtCategory.getText();
         try {
-        checker.addCategory(category);
-        lblFeedback.setText("Adding category: " + category);
+            checker.addCategory(category);
+            lblFeedback.setText("Added successfully");
+            if (onCategoryAdded != null) {
+                onCategoryAdded.run();
+            }
         } catch (Exception e) {
-        lblFeedback.setText("Category already exists");
+            lblFeedback.setText("Category already exists");
         }
     }
 

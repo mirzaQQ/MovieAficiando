@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CategoryDAO {
 
@@ -48,6 +50,40 @@ public class CategoryDAO {
 
         } catch (SQLException e) {
             throw new SQLException(e);
+        }
+    }
+
+    public List<Category> getAllCategories() throws SQLException {
+        String sql = "SELECT * FROM Category ORDER BY name";
+        List<Category> categories = new ArrayList<>();
+        try (Connection con = conMan.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                categories.add(new Category(
+                        rs.getInt("id"),
+                        rs.getString("name")
+                ));
+            }
+            return categories;
+        } catch (SQLException e) {
+            throw new SQLException(e);
+        }
+    }
+
+    public void deleteCategory(int id) throws SQLException {
+        String sql = "DELETE FROM Category WHERE id = ?";
+
+        try (Connection con = conMan.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new SQLException(e);
+
+
         }
     }
 }

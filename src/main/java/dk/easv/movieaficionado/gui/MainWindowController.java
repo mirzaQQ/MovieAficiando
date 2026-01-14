@@ -5,19 +5,70 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
+import java.sql.SQLException;
 import java.io.IOException;
 
+import dk.easv.movieaficionado.be.Category;
+import dk.easv.movieaficionado.dal.dao.CategoryDAO;
+import javafx.fxml.FXML;
+import javafx.scene.control.ListView;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+
+
+
+
 public class MainWindowController {
+
+
+    //List view for showing categories
+    @FXML
+    private ListView<Category> lstCategories;
+
+    private final CategoryDAO categoryDAO = new CategoryDAO();
+
     private String SelectedItem;
     Movies movieOps = new Movies();
+
     public void btnAddCategory(ActionEvent actionEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("gui/AddCategory.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
+        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("gui/AddCategory.fxml"));
+        Scene scene = new Scene(loader.load()); // load musí být před getController()
+
+        AddCategoryController controller = loader.getController();
+        controller.setOnCategoryAdded(this::refreshCategories);
+
         Stage stage = new Stage();
         stage.setTitle("Add Category");
         stage.setScene(scene);
         stage.show();
+    }
+
+    @FXML
+    public void initialize() {
+        refreshCategories();
+    }
+
+    public void refreshCategories() {
+        try {
+            lstCategories.getItems().setAll(categoryDAO.getAllCategories());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
+    public void btnRemoveCategory(ActionEvent actionEvent) {
+        Category selected = lstCategories.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            return; // nic není vybrané
+        }
+
+        try {
+            categoryDAO.deleteCategory(selected.getId());
+            refreshCategories(); // okamžitý refresh listu
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void btnAddMovie(ActionEvent actionEvent) throws IOException {
