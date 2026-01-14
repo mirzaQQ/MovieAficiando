@@ -1,8 +1,7 @@
 package dk.easv.movieaficionado.dal.dao;
 
-import com.microsoft.sqlserver.jdbc.SQLServerException;
 import dk.easv.movieaficionado.dal.ConnectionManager;
-import dk.easv.movieaficionado.be.Movie;
+
 import java.sql.*;
 
 public class MovieDAO {
@@ -21,6 +20,7 @@ public class MovieDAO {
             int catId = rs.getInt("id");
             ps.close();
             stmt.close();
+
             String sql2 = "INSERT INTO Movie (name, rating, filelink, p_rating) VALUES (?, ?, ?, ?)";
             PreparedStatement ps2 = con.prepareStatement(sql2);
             ps2.setString(1, Title);
@@ -29,6 +29,7 @@ public class MovieDAO {
             ps2.setString(4, p_rating);
             ps2.executeUpdate();
             ps2.close();
+
             String sql3 = "SELECT id FROM Movie WHERE filelink = ?";
             PreparedStatement ps3 = con.prepareStatement(sql3);
             ps3.setString(1, filepath);
@@ -47,23 +48,5 @@ public class MovieDAO {
         } catch (SQLException e) {
             throw new SQLException(e);
         }
-
-        /**
-         String sql = """
-         INSERT INTO Movie (title, rating, filelink,p_rating)
-         VALUES (?, ?, ?, ?)
-         """;
-         PreparedStatement pstmt = con.prepareStatement(sql)) {
-
-         pstmt.setString(1, Title);
-         pstmt.setString(2, imdbRating);
-         pstmt.setString(3, filepath);
-         pstmt.setString(4, p_rating);
-
-         pstmt.executeUpdate();
-
-         } catch (SQLException e) {
-         }
-         */
     }
 }

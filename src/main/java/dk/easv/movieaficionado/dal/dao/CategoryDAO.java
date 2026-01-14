@@ -1,5 +1,6 @@
 package dk.easv.movieaficionado.dal.dao;
 
+import dk.easv.movieaficionado.be.Category;
 import dk.easv.movieaficionado.dal.ConnectionManager;
 
 import java.sql.Connection;
@@ -9,31 +10,44 @@ import java.sql.SQLException;
 
 public class CategoryDAO {
 
-    ConnectionManager conMan = new ConnectionManager();
+    private final ConnectionManager conMan = new ConnectionManager();
 
-    //checks if a category with this name already exist
-    public boolean checkCategory(String categoryName) throws SQLException {
-        String sql = "SELECT FROM Category WHERE name = ?";
+    public void addCategory(String name) throws SQLException {
 
-        try (Connection con = (Connection) conMan.getConnection();
+        String sql = "INSERT INTO Category (name) VALUES (?)";
+
+        try (Connection con = conMan.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, categoryName);
-            ResultSet rs = ps.executeQuery();
 
-            return rs.next();
+            ps.setString(1, name);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new SQLException(e);
         }
     }
 
-    //Adds a new category if it does not already exist
-    public void addCategory(String category) throws SQLException {
-        if (checkCategory(category)) {
-            throw new SQLException("Category already exists");
-        }
-        String sql = "INSERT INTO Category (name) VALUES (?)";
-        try (Connection con = (Connection) conMan.getConnection();
+    public Category getCategoryByName(String name) throws SQLException {
+
+        String sql = "SELECT * FROM Category WHERE name = ?";
+
+        try (Connection con = conMan.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, category);
-            ps.executeUpdate();
+
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return new Category(
+                        rs.getInt("id"),
+                        rs.getString("name")
+                );
+            }
+
+            return null;
+
+        } catch (SQLException e) {
+            throw new SQLException(e);
         }
     }
 }
