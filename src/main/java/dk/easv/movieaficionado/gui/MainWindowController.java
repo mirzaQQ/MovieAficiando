@@ -1,9 +1,15 @@
 package dk.easv.movieaficionado.gui;
 
 import dk.easv.movieaficionado.MainApplication;
+import dk.easv.movieaficionado.be.Movie;
+import dk.easv.movieaficionado.dal.dao.MovieDAO;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import java.sql.SQLException;
 import java.io.IOException;
@@ -12,14 +18,20 @@ import dk.easv.movieaficionado.be.Category;
 import dk.easv.movieaficionado.dal.dao.CategoryDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
+
 
 
 
 
 public class MainWindowController {
+
+    //Table view fields for viewing movies
+    @FXML private TableView<Movie> movieTable;
+    @FXML private TableColumn<Movie, String> colTitle;
+    @FXML private TableColumn<Movie, Number> colImdb;
+    @FXML private TableColumn<Movie, Number> colPersonal;
+
+    private final MovieDAO movieDAO = new MovieDAO();
 
 
     //List view for showing categories
@@ -47,6 +59,19 @@ public class MainWindowController {
     @FXML
     public void initialize() {
         refreshCategories();
+        colTitle.setCellValueFactory(data ->
+                new SimpleStringProperty(data.getValue().getName())
+        );
+
+        colImdb.setCellValueFactory(data ->
+                new SimpleDoubleProperty(data.getValue().getRating())
+        );
+
+        colPersonal.setCellValueFactory(data ->
+                new SimpleDoubleProperty(data.getValue().getPrating())
+        );
+
+        refreshMovies();
     }
 
     public void refreshCategories() {
@@ -60,12 +85,18 @@ public class MainWindowController {
     public void btnRemoveCategory(ActionEvent actionEvent) {
         Category selected = lstCategories.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            return; // nic není vybrané
+            return;
         }
-
         try {
             categoryDAO.deleteCategory(selected.getId());
-            refreshCategories(); // okamžitý refresh listu
+            refreshCategories();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void refreshMovies() {
+        try {
+            movieTable.getItems().setAll(movieDAO.getAllMovies());
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -1,17 +1,27 @@
 package dk.easv.movieaficionado.be;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class Movie {
     private int id;
     private String name;
-    private int rating;
+    private double rating;
+    private double p_rating;
     private String filelink;
-    private String lastview;
+    private LocalDate lastview;
 
-    public  Movie(int id, String name, String filelink) {
+    //Constructor from the database
+    public  Movie(int id, String name, double rating, double p_rating, String filelink, LocalDate lastview) {
         this.id = id;
         this.name = name;
+        this.rating = rating;
+        this.p_rating = p_rating;
         this.filelink = filelink;
+        this.lastview = lastview;
+
     }
+    //Constructor for new movies
     public Movie(String name, String filelink) {
         this.name = name;
         this.filelink = filelink;
@@ -23,25 +33,35 @@ public class Movie {
     public String getName() {
         return name;
     }
-    public int getRating() {
+    public double getRating() {
         return rating;
+    }
+    public double getPrating() {
+        return p_rating;
     }
     public String getFilelink() {
         return filelink;
     }
-    public String getLastview() {
+    public LocalDate getLastview() {
         return lastview;
     }
     public void setName(String name) {
         this.name = name;
     }
-    public void setRating(int rating) {
+    public void setRating(double rating) {
         this.rating = rating;
+    }
+    public void setPrating(double p_rating) {
+        this.p_rating = p_rating;
     }
     public void setFilelink(String filelink) {
         this.filelink = filelink;
     }
-    public void setLastview(String lastview) {
+    public void setLastview(LocalDate lastview) {
         this.lastview = lastview;
+    }
+    @Override
+    public String toString() {
+        return name;
     }
 }

@@ -19,8 +19,8 @@ public class Checker {
 
     }
 
-    public void addMovie(String Title, String imdbRating, String filepath, String p_rating, String category) throws SQLException {
-        movieDAO.addMovie(Title, imdbRating, filepath, p_rating, category);
+    public void addMovie(String title, double imdb, String filepath, double personal, String category) throws SQLException {
+        movieDAO.addMovie(title, imdb, filepath, personal, category);
     }
 }
 

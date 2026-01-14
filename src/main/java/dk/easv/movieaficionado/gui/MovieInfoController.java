@@ -26,23 +26,32 @@ public class MovieInfoController {
 
     FileOps fileOps = new FileOps();
     Checker checker = new Checker();
-    public void btnSaveOnClick(ActionEvent actionEvent) throws SQLException {
-        String category = txtCategory.getText();
-        String personal = txtPersonal.getText();
-        String imbd = txtImbd.getText();
-        String title = txtTitle.getText();
-        String file = txtFile.getText();
-        System.out.println("Category: " + category);
-        System.out.println("Personal: " + personal);
-        System.out.println("Imbd: " + imbd);
-        System.out.println("Title: " + title);
+    public void btnSaveOnClick(ActionEvent actionEvent) {
+        try {
+            if (currentFile == null || currentFile.isBlank()) return;
 
-        System.out.println("File: " + file);
-        checker.addMovie(txtTitle.getText(), txtImbd.getText(), currentFile, txtPersonal.getText(), txtCategory.getText());
+            double imdb = Double.parseDouble(txtImbd.getText().trim().replace(",", "."));
+            double personal = Double.parseDouble(txtPersonal.getText().trim().replace(",", "."));
 
-        System.out.println(fileOps.checkFile(currentFile));
+            if (imdb < 0 || imdb > 10 || personal < 0 || personal > 10) {
+                System.out.println("Rating must be between 0 and 10");
+                return;
+            }
+            checker.addMovie(
+                    txtTitle.getText().trim(),
+                    imdb,
+                    currentFile,
+                    personal,
+                    txtCategory.getText().trim()
+            );
 
+        } catch (NumberFormatException e) {
+            System.out.println("Ratings must be numbers!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
     public void btnExitOnClick(ActionEvent actionEvent) {
         Stage stage = (Stage) btnExit.getScene().getWindow();
 
