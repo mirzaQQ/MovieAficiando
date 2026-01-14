@@ -103,8 +103,18 @@ public class MainWindowController {
     }
 
     public void btnAddMovie(ActionEvent actionEvent) throws IOException {
-        movieOps.AddMovie();
+        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("gui/MovieInfo.fxml"));
+        Scene scene = new Scene(loader.load());
+
+        MovieInfoController controller = loader.getController();
+        controller.setOnMovieAdded(this::refreshMovies);
+
+        Stage stage = new Stage();
+        stage.setTitle("Add Movie");
+        stage.setScene(scene);
+        stage.show();
     }
+
 
     public void btnEditMovie(ActionEvent actionEvent) throws IOException {
         movieOps.EditMovie();

@@ -24,6 +24,13 @@ public class MovieInfoController {
     private TextField txtTitle;
     private String currentFile;
 
+    private Runnable onMovieAdded;
+
+    public void setOnMovieAdded(Runnable onMovieAdded) {
+        this.onMovieAdded = onMovieAdded;
+    }
+
+
     FileOps fileOps = new FileOps();
     Checker checker = new Checker();
     public void btnSaveOnClick(ActionEvent actionEvent) {
@@ -44,6 +51,10 @@ public class MovieInfoController {
                     personal,
                     txtCategory.getText().trim()
             );
+            if (onMovieAdded != null) onMovieAdded.run();
+            Stage stage = (Stage) btnExit.getScene().getWindow();
+            stage.close();
+
 
         } catch (NumberFormatException e) {
             System.out.println("Ratings must be numbers!");
