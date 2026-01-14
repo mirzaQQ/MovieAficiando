@@ -1,6 +1,7 @@
 package dk.easv.movieaficionado.gui;
 
 import dk.easv.movieaficionado.MainApplication;
+import dk.easv.movieaficionado.bll.DBOps;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -12,11 +13,16 @@ import java.io.IOException;
 import javafx.scene.media.MediaPlayer;
 
 public class Movies {
-    private MediaPlayer mediaPlayer;
+    //private MediaPlayer mediaPlayer;
+    DBOps ops = new DBOps();
 
 
-    public void RemovedMovie() {
+
+    public void RemovedMovie(int movieId) {
         System.out.println("Removing movie from list");
+        ops.removeMovie(movieId);
+
+
 
     }
 

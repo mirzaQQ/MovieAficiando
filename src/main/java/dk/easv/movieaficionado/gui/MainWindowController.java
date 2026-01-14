@@ -121,7 +121,10 @@ public class MainWindowController {
     }
 
     public void btnRemoveMovie(ActionEvent actionEvent) {
-        movieOps.RemovedMovie();
+
+        //SelectedItem = movieTable.getSelectionModel().getSelectedItem().getName();
+        int item = movieTable.getSelectionModel().getSelectedItem().getId();
+        movieOps.RemovedMovie(item);
     }
 
     public void btnPlayMovie(ActionEvent actionEvent) throws IOException {

@@ -1,6 +1,5 @@
 package dk.easv.movieaficionado.bll;
 
-import com.microsoft.sqlserver.jdbc.SQLServerException;
 import dk.easv.movieaficionado.dal.dao.CategoryDAO;
 import dk.easv.movieaficionado.dal.dao.MovieDAO;
 

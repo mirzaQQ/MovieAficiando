@@ -91,5 +91,21 @@ public class MovieDAO {
             }
         }
     }
+    public void removeMovie(int id){
+        String sql = "DELETE FROM Movie WHERE id = ?";
+        try(Connection con = conMan.getConnection();){
+            catMovieDAO.removeElement(id);
+            Statement stmt = con.createStatement();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, id);
+            ps.executeUpdate();
+            ps.close();
+            stmt.close();
+        } catch (SQLServerException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
