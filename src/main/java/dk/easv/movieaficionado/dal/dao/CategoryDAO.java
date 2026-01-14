@@ -28,6 +28,16 @@ public class CategoryDAO {
             throw new SQLException(e);
         }
     }
+    public int getCategoryId(String name) throws SQLException {
+        try (Connection con = conMan.getConnection();
+        PreparedStatement ps = con.prepareStatement("SELECT id FROM Category WHERE name = ?")) {
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            return rs.getInt("id");
+        }
+
+    }
 
     public Category getCategoryByName(String name) throws SQLException {
 
