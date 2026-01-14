@@ -34,7 +34,8 @@ public class CategoryDAO {
             ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
             rs.next();
-            return rs.getInt("id");
+            int categoryId = rs.getInt("id");
+            return categoryId;
         }
 
     }
