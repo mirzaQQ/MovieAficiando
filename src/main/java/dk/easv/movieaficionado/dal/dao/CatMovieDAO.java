@@ -8,7 +8,7 @@ import java.sql.*;
 public class CatMovieDAO {
     private final ConnectionManager conMan = new ConnectionManager();
 
-    public void instertMovie(int catId, int movieId) throws SQLServerException {
+    public void insertMovie(int catId, int movieId) throws SQLServerException {
         String sql = "INSERT INTO CatMovie (CategoryId, movieId) VALUES (?, ?)";
         try (Connection con = conMan.getConnection();) {
             Statement stmt = con.createStatement();
@@ -24,20 +24,17 @@ public class CatMovieDAO {
 
     }
 
-    public void removeElement(int movieId) {
+    public void removeElement(int movieId) throws SQLException {
+
         String sql = "DELETE FROM CatMovie WHERE movieId = ?";
-        try(Connection con = conMan.getConnection();) {
-            Statement stmt = con.createStatement();
-            PreparedStatement ps = con.prepareStatement(sql);
+
+        try (Connection con = conMan.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setInt(1, movieId);
             ps.executeUpdate();
-            ps.close();
-            stmt.close();
-        } catch (SQLServerException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
-
     }
+
+
 }

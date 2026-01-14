@@ -1,12 +1,14 @@
 package dk.easv.movieaficionado.bll;
 
-import dk.easv.movieaficionado.be.Movie;
-import dk.easv.movieaficionado.dal.dao.MovieDAO;
+import java.sql.SQLException;
 
 public class DBOps {
-    MovieDAO  movieDAO = new MovieDAO();
-    public void removeMovie(int movieId) {
+
+    private final Checker checker = new Checker();
+
+    // Deletes a movie safely (with category relations)
+    public void removeMovie(int movieId) throws SQLException {
         System.out.println("Removing movie: " + movieId);
-        movieDAO.removeMovie(movieId);
+        checker.removeMovie(movieId);
     }
 }

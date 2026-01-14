@@ -18,6 +18,7 @@ import dk.easv.movieaficionado.be.Category;
 import dk.easv.movieaficionado.dal.dao.CategoryDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
+import dk.easv.movieaficionado.bll.DBOps;
 
 
 
@@ -32,6 +33,8 @@ public class MainWindowController {
     @FXML private TableColumn<Movie, Number> colPersonal;
 
     private final MovieDAO movieDAO = new MovieDAO();
+    private final DBOps ops = new DBOps();
+
 
 
     //List view for showing categories
@@ -126,7 +129,7 @@ public class MainWindowController {
         if (selected == null) return;
 
         try{
-            movieDAO.removeMovie(selected.getId());
+            ops.removeMovie(selected.getId());
             refreshMovies();
         }catch (Exception e){
             e.printStackTrace();

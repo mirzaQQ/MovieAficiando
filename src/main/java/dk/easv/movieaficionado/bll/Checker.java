@@ -2,12 +2,14 @@ package dk.easv.movieaficionado.bll;
 
 import dk.easv.movieaficionado.dal.dao.CategoryDAO;
 import dk.easv.movieaficionado.dal.dao.MovieDAO;
+import dk.easv.movieaficionado.dal.dao.CatMovieDAO;
 
 import java.sql.SQLException;
 
 public class Checker {
-    CategoryDAO categoryDAO = new CategoryDAO();
-    MovieDAO movieDAO = new MovieDAO();
+    private final CategoryDAO categoryDAO = new CategoryDAO();
+    private final MovieDAO movieDAO = new MovieDAO();
+    private final CatMovieDAO catMovieDAO = new CatMovieDAO();
 
     public void addCategory(String category) throws SQLException {
     //Checks if the category already exist before inserting
@@ -17,10 +19,28 @@ public class Checker {
         categoryDAO.addCategory(category);
 
     }
+    // Adds movie and connects it to a category
+    public void addMovie(String title, double imdbRating, String filepath,
+                         double personalRating, String category) throws SQLException {
 
-    public void addMovie(String title, double imdb, String filepath, double personal, String category) throws SQLException {
-        movieDAO.addMovie(title, imdb, filepath, personal, category);
+        //Saves movie and get its ID
+        int movieId = movieDAO.addMovie(title, imdbRating, filepath, personalRating);
+
+        //Find category ID
+        int categoryId = categoryDAO.getCategoryId(category);
+
+        //Connect movie & category
+        catMovieDAO.insertMovie(categoryId, movieId);
+    }
+    public void removeMovie(int movieId) throws SQLException {
+
+        // First delete all category relations for this movie
+        catMovieDAO.removeElement(movieId);
+
+        // Then delete the movie itself
+        movieDAO.removeMovie(movieId);
     }
 }
+
 
 
