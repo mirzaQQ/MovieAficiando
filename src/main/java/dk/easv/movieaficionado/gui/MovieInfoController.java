@@ -7,6 +7,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import dk.easv.movieaficionado.bll.*;
 
+import java.sql.SQLException;
+
 public class MovieInfoController {
     @FXML
     public TextField txtFile;
@@ -23,7 +25,8 @@ public class MovieInfoController {
     private String currentFile;
 
     FileOps fileOps = new FileOps();
-    public void btnSaveOnClick(ActionEvent actionEvent) {
+    Checker checker = new Checker();
+    public void btnSaveOnClick(ActionEvent actionEvent) throws SQLException {
         String category = txtCategory.getText();
         String personal = txtPersonal.getText();
         String imbd = txtImbd.getText();
@@ -35,6 +38,7 @@ public class MovieInfoController {
         System.out.println("Title: " + title);
 
         System.out.println("File: " + file);
+        checker.addMovie(txtTitle.getText(), txtImbd.getText(), currentFile, txtPersonal.getText(), txtCategory.getText());
 
         System.out.println(fileOps.checkFile(currentFile));
 

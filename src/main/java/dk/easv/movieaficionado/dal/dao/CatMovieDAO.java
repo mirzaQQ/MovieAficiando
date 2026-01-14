@@ -11,7 +11,7 @@ public class CatMovieDAO {
 
     ConnectionManager conMan = new ConnectionManager();
 
-    //checks if a category with this name already exist
+   /** //checks if a category with this name already exist
     public boolean checkCategory(String categoryName) throws SQLException {
         String sql = "SELECT FROM Category WHERE name = ?";
 
@@ -35,5 +35,5 @@ public class CatMovieDAO {
             ps.setString(1, category);
             ps.executeUpdate();
         }
-    }
+    }*/
 }
