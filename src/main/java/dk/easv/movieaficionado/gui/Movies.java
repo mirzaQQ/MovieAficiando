@@ -11,20 +11,29 @@ import java.io.IOException;
 
 
 import javafx.scene.media.MediaPlayer;
+import java.sql.SQLException;
+
 
 public class Movies {
     //private MediaPlayer mediaPlayer;
+
     DBOps ops = new DBOps();
 
 
 
     public void RemovedMovie(int movieId) {
-        System.out.println("Removing movie from list");
-        ops.removeMovie(movieId);
-
-
-
+        try {
+            System.out.println("Removing movie from list");
+            ops.removeMovie(movieId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Could not remove movie: " + e.getMessage());
+        }
     }
+
+
+
+
 
 
     public void AddMovie() throws IOException {
@@ -63,6 +72,5 @@ public class Movies {
         stage.show();
 
     }
-
-
 }
+

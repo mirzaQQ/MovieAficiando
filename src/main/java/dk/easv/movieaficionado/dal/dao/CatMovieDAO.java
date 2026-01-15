@@ -1,33 +1,31 @@
 package dk.easv.movieaficionado.dal.dao;
 
+import com.microsoft.sqlserver.jdbc.SQLServerException;
 import dk.easv.movieaficionado.dal.ConnectionManager;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class CatMovieDAO {
-
     private final ConnectionManager conMan = new ConnectionManager();
 
-    // INSERT relation between category and movie
-    public void insertMovie(int categoryId, int movieId) {
+    public void insertMovie(int catId, int movieId) throws SQLServerException {
         String sql = "INSERT INTO CatMovie (CategoryId, movieId) VALUES (?, ?)";
-
-        try (Connection con = conMan.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setInt(1, categoryId);
+        try (Connection con = conMan.getConnection();) {
+            Statement stmt = con.createStatement();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setInt(1, catId);
             ps.setInt(2, movieId);
             ps.executeUpdate();
-
+            ps.close();
+            stmt.close();
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to insert CatMovie relation", e);
+            throw new RuntimeException(e);
         }
+
     }
 
-    // DELETE all category relations for a movie
-    public void removeElement(int movieId) {
+    public void removeElement(int movieId) throws SQLException {
+
         String sql = "DELETE FROM CatMovie WHERE movieId = ?";
 
         try (Connection con = conMan.getConnection();
@@ -35,9 +33,8 @@ public class CatMovieDAO {
 
             ps.setInt(1, movieId);
             ps.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to delete CatMovie relations", e);
         }
     }
+
+
 }
