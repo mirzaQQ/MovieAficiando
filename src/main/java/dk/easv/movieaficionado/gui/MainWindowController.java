@@ -16,11 +16,17 @@ import dk.easv.movieaficionado.be.Category;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import dk.easv.movieaficionado.bll.Checker;
+import dk.easv.movieaficionado.bll.DBOps;
+import javafx.scene.control.TextField;
+
+
 
 
 public class MainWindowController {
 
     private final Checker checker = new Checker();
+    private final DBOps ops = new DBOps();
+
 
     //Table view fields for viewing movies
     @FXML private TableView<Movie> movieTable;
@@ -28,6 +34,11 @@ public class MainWindowController {
     @FXML private TableColumn<Movie, Number> colImdb;
     @FXML private TableColumn<Movie, Number> colPersonal;
     @FXML private TableColumn<Movie, String> colCategories;
+
+
+    //TextField used to filter movies by title
+    @FXML
+    private TextField txtTitleFilter;
 
 
     //List view for showing categories
@@ -74,6 +85,10 @@ public class MainWindowController {
         });
 
         refreshMovies();
+
+        txtTitleFilter.textProperty().addListener((obs, oldText, newText) -> {
+            filterByTitle(newText);
+        });
     }
 
     public void refreshCategories() {
@@ -158,4 +173,18 @@ public class MainWindowController {
         SelectedItem = "video.mp4";
         return SelectedItem;
     }
+
+    // Filters movies by title
+    private void filterByTitle(String text) {
+
+        try {
+            // Ask business layer to search movies
+            movieTable.getItems().setAll(
+                    ops.searchMoviesByTitle(text)
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

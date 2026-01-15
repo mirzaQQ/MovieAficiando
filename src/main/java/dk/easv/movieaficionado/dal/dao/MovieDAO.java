@@ -173,4 +173,38 @@ public class MovieDAO {
             ps.executeUpdate();
         }
     }
+    public List<Movie>searchByTitle(String query) throws SQLException {
+
+        String sql = """
+                SELECT id, name, rating, p_rating, filelink, lastview
+                FROM Movie Where name LIKE ?
+                ORDER BY name
+                """;
+        List<Movie> movies = new ArrayList<>();
+            try (Connection con = conMan.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setString(1, "%" + query.trim() + "%");
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    LocalDate lastview = null;
+                    Date d = rs.getDate("lastview");
+                    if (d != null) lastview = d.toLocalDate();
+
+                    Movie movie = new Movie(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getDouble("rating"),
+                            rs.getDouble("p_rating"),
+                            rs.getString("filelink"),
+                            lastview
+                    );
+
+                    movie.getCategories().addAll(
+                            categoryDAO.getCategoriesForMovie(movie.getId())
+                    );
+                    movies.add(movie);
+                }
+            }
+            return movies;
+    }
 }

@@ -37,8 +37,6 @@ public class Checker {
        movieDAO.addMovie(movie);
    }
 
-
-
     public void removeMovie(int movieId) throws SQLException {
         movieDAO.removeMovie(movieId);
     }
@@ -55,8 +53,14 @@ public class Checker {
                 "Use addMovie(Movie) instead – supports multiple categories"
         );
     }
-    public void updateMovie(Movie movie) throws SQLException {
-        movieDAO.updateMovie(movie);
+
+    // sends the search text to the database and returns matching
+    public List<Movie> searchMoviesByTitle(String text) throws SQLException {
+        return movieDAO.searchByTitle(text);
     }
+public void updateMovie(Movie movie) throws SQLException {
+    movieDAO.updateMovie(movie);
+}
+
 
 }
