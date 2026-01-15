@@ -92,6 +92,7 @@ public class MovieDAO {
         String sql = "SELECT id, name, rating, p_rating, filelink, lastview FROM Movie ORDER BY name";
         List<Movie> movies = new ArrayList<>();
 
+
         try (Connection con = conMan.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {

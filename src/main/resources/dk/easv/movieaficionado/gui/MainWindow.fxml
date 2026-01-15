@@ -52,12 +52,12 @@
         </HBox>
     </top>
     <center>
-        <TableView fx:id="movieTable" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="366.0" prefWidth="581.0" BorderPane.alignment="CENTER">
+        <TableView fx:id="movieTable" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="366.0" prefWidth="555.0" BorderPane.alignment="CENTER">
             <columns>
                 <TableColumn fx:id="colTitle" prefWidth="200.0" text="Title" />
                 <TableColumn fx:id="colImdb" text="IMDB" />
                 <TableColumn fx:id="colPersonal" prefWidth="100.0" text="Personal" />
-                <TableColumn fx:id="colCategories" prefWidth="200.0" text="Categories" />
+                <TableColumn fx:id="colCategories" maxWidth="200.0" prefWidth="200.0" text="Categories" />
             </columns>
         </TableView>
     </center>

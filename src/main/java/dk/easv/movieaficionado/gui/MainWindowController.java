@@ -15,7 +15,6 @@ import java.io.IOException;
 import dk.easv.movieaficionado.be.Category;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
-import dk.easv.movieaficionado.bll.DBOps;
 import dk.easv.movieaficionado.bll.Checker;
 
 
@@ -28,8 +27,7 @@ public class MainWindowController {
     @FXML private TableColumn<Movie, String> colTitle;
     @FXML private TableColumn<Movie, Number> colImdb;
     @FXML private TableColumn<Movie, Number> colPersonal;
-
-
+    @FXML private TableColumn<Movie, String> colCategories;
 
 
     //List view for showing categories
@@ -59,14 +57,21 @@ public class MainWindowController {
         colTitle.setCellValueFactory(data ->
                 new SimpleStringProperty(data.getValue().getName())
         );
-
         colImdb.setCellValueFactory(data ->
                 new SimpleDoubleProperty(data.getValue().getRating())
         );
-
         colPersonal.setCellValueFactory(data ->
                 new SimpleDoubleProperty(data.getValue().getPrating())
         );
+        colCategories.setCellValueFactory(data -> {
+            Movie m = data.getValue();
+            String cats = m.getCategories().stream()
+                    .map(Category::getName)
+                    .sorted()
+                    .reduce((a, b) -> a + ", " + b)
+                    .orElse("");
+            return new SimpleStringProperty(cats);
+        });
 
         refreshMovies();
     }
