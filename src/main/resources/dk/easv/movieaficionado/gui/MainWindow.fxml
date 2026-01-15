@@ -24,13 +24,13 @@
             <children>
             <AnchorPane prefHeight="90.0" prefWidth="1113.0" HBox.hgrow="ALWAYS">
                <children>
-                      <Label layoutX="8.0" layoutY="-8.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="31.0" prefWidth="78.0" text="Title:">
+                      <Label layoutX="8.0" layoutY="-6.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="31.0" prefWidth="78.0" text="Title:">
                      <font>
                         <Font name="System Bold" size="26.0" />
                      </font>
                   </Label>
-                      <TextField fx:id="txtTitleFilter" layoutX="72.0" layoutY="-2.0" promptText="Search title..." />
-                      <Label fx:id="cmbCategory" layoutX="249.0" layoutY="-9.0" prefHeight="38.0" prefWidth="133.0" text="Category:">
+                      <TextField fx:id="txtTitleFilter" layoutX="64.0" layoutY="-2.0" promptText="Search title..." />
+                      <Label fx:id="cmbCategory" layoutX="281.0" layoutY="-10.0" prefHeight="38.0" prefWidth="133.0" text="Sort by:">
                      <font>
                         <Font name="System Bold" size="26.0" />
                      </font>
@@ -45,7 +45,7 @@
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font></Button>
-                  <ComboBox layoutX="370.0" layoutY="-3.0" prefWidth="150.0" />
+                  <ComboBox layoutX="368.0" layoutY="-2.0" prefWidth="150.0" />
                </children>
             </AnchorPane>
             </children>
