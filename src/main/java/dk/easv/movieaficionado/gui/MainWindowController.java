@@ -4,24 +4,29 @@ import dk.easv.movieaficionado.MainApplication;
 import dk.easv.movieaficionado.be.Movie;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
 import java.sql.SQLException;
 import java.io.IOException;
+import java.util.Comparator;
+
 import dk.easv.movieaficionado.be.Category;
 import javafx.fxml.FXML;
-import javafx.scene.control.ListView;
 import dk.easv.movieaficionado.bll.Checker;
 import dk.easv.movieaficionado.bll.DBOps;
-import javafx.scene.control.TextField;
-
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
+import java.util.Comparator;
 
 
 
@@ -29,6 +34,7 @@ public class MainWindowController {
 
     private final Checker checker = new Checker();
     private final DBOps ops = new DBOps();
+    private ObservableList<Movie> sliderBaseList;
 
 
     //Table view fields for viewing movies
@@ -39,14 +45,17 @@ public class MainWindowController {
     @FXML private TableColumn<Movie, String> colCategories;
 
 
-    //TextField used to filter movies by title
-    @FXML
-    private TextField txtTitleFilter;
+    // UI controls
+    @FXML private TextField txtTitleFilter;
+    @FXML private ComboBox<String> cmbSortBy;
+    @FXML private ListView<Category> lstCategories;
+    @FXML private Slider sliderImdb;
 
+    // Class fields
+    private ObservableList<Movie> masterMovieList;
+    private FilteredList<Movie> filteredMovies;
+    private SortedList<Movie> sortedMovies;
 
-    //List view for showing categories
-    @FXML
-    private ListView<Category> lstCategories;
 
 
     private String SelectedItem;
@@ -89,6 +98,35 @@ public class MainWindowController {
 
         refreshMovies();
 
+        sliderImdb.setOnMousePressed(e -> {
+            sliderBaseList = FXCollections.observableArrayList(movieTable.getItems());
+        });
+
+        // filtering logic
+        sliderImdb.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (sliderBaseList == null) return;
+
+            double minRating = newVal.doubleValue();
+
+            movieTable.getItems().setAll(
+                    sliderBaseList.filtered(movie ->
+                            movie.getRating() >= minRating
+                    )
+            );
+        });
+
+        cmbSortBy.getItems().addAll(
+                "Title (A–Z)",
+                "IMDb Rating (High → Low)",
+                "IMDb Rating (Low → High)",
+                "Personal Rating (High → Low)",
+                "Personal Rating (Low → High)",
+                "Category (A–Z)"
+        );
+
+        cmbSortBy.setOnAction(e -> applySorting());
+
+
         txtTitleFilter.textProperty().addListener((obs, oldText, newText) -> {
             filterByTitle(newText);
         });
@@ -114,6 +152,37 @@ public class MainWindowController {
             e.printStackTrace();
         }
     }
+    @FXML
+    public void btnClearFilters(ActionEvent actionEvent) {
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Clear Filters");
+        alert.setHeaderText("Clear all filters?");
+        alert.setContentText("This will reset all filter settings and sorting.");
+
+        ButtonType btnClear = new ButtonType("Clear");
+        ButtonType btnCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(btnClear, btnCancel);
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == btnClear) {
+
+                // Reset UI controls
+                sliderImdb.setValue(0);
+                lstCategories.getSelectionModel().clearSelection();
+                cmbSortBy.getSelectionModel().clearSelection();
+
+                // Restore table using existing title search logic
+                filterByTitle(txtTitleFilter.getText());
+
+                // Reset slider snapshot
+                sliderBaseList = FXCollections.observableArrayList(movieTable.getItems());
+            }
+        });
+    }
+
+
     public void refreshMovies() {
         try {
             movieTable.getItems().setAll(checker.getAllMovies());
@@ -189,4 +258,41 @@ public class MainWindowController {
         }
     }
 
+    private void applySorting() {
+        String selected = cmbSortBy.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+
+        Comparator<Movie> comparator = null;
+
+        switch (selected) {
+            case "Title (A–Z)":
+                comparator = Comparator.comparing(Movie::getName, String.CASE_INSENSITIVE_ORDER);
+                break;
+            case "IMDb Rating (High → Low)":
+                comparator = Comparator.comparingDouble(Movie::getRating).reversed();
+                break;
+            case "IMDb Rating (Low → High)":
+                comparator = Comparator.comparingDouble(Movie::getRating);
+                break;
+            case "Personal Rating (High → Low)":
+                comparator = Comparator.comparingDouble(Movie::getPrating).reversed();
+                break;
+            case "Personal Rating (Low → High)":
+                comparator = Comparator.comparingDouble(Movie::getPrating);
+                break;
+            case "Category (A–Z)":
+                comparator = Comparator.comparing(
+                        movie -> movie.getCategories().stream()
+                                .map(Category::getName)
+                                .sorted()
+                                .reduce((a, b) -> a + ", " + b)
+                                .orElse(""),
+                        String.CASE_INSENSITIVE_ORDER
+                );
+        }
+
+        if (comparator != null) {
+            FXCollections.sort(movieTable.getItems(), comparator);
+        }
+    }
 }

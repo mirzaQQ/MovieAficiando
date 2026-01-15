@@ -46,7 +46,11 @@
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font></Button>
-                  <ComboBox layoutX="370.0" layoutY="-3.0" prefWidth="150.0" />
+                  <ComboBox fx:id="cmbSortBy"
+                             layoutX="370.0"
+                             layoutY="-3.0"
+                             prefWidth="180.0"
+                             promptText="Sort by" />
                </children>
             </AnchorPane>
             </children>
