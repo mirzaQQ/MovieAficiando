@@ -82,6 +82,38 @@ public class CategoryDAO {
         }
     }
 
+    public List<Category> getCategoriesForMovie(int movieId) throws SQLException {
+
+        String sql = """
+        SELECT c.id, c.name
+        FROM Category c
+        JOIN CatMovie cm ON c.id = cm.CategoryId
+        WHERE cm.movieId = ?
+    """;
+
+        List<Category> categories = new ArrayList<>();
+
+        try (Connection con = conMan.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, movieId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    categories.add(
+                            new Category(
+                                    rs.getInt("id"),
+                                    rs.getString("name")
+                            )
+                    );
+                }
+            }
+        }
+
+        return categories;
+    }
+
+
     public void deleteCategory(int id) throws SQLException {
         String sql = "DELETE FROM Category WHERE id = ?";
 

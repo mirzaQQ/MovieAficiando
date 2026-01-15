@@ -1,6 +1,7 @@
 package dk.easv.movieaficionado.dal.dao;
 
 import com.microsoft.sqlserver.jdbc.SQLServerException;
+import dk.easv.movieaficionado.be.Category;
 import dk.easv.movieaficionado.be.Movie;
 import dk.easv.movieaficionado.dal.ConnectionManager;
 
@@ -11,9 +12,9 @@ import java.util.List;
 
 public class MovieDAO {
 
-    private final ConnectionManager conMan = new ConnectionManager();
-    CategoryDAO categoryDAO = new CategoryDAO();
-    CatMovieDAO catMovieDAO = new CatMovieDAO();
+    private ConnectionManager conMan = new ConnectionManager();
+    private CategoryDAO categoryDAO = new CategoryDAO();
+    private CatMovieDAO catMovieDAO = new CatMovieDAO();
 
     public List<Movie> getAllMovies() throws SQLException {
         String sql = "SELECT id, name, rating, p_rating, filelink, lastview FROM Movie ORDER BY name";
@@ -33,30 +34,43 @@ public class MovieDAO {
                 Date d = rs.getDate("lastview");
                 LocalDate lastview = (d != null) ? d.toLocalDate() : null;
 
-                movies.add(new Movie(
+                Movie movie = new Movie(
                         id,
                         name,
                         rating,
                         p_rating,
                         filelink,
                         lastview
-                ));
+                );
+
+                // Load categories for this movie
+                movie.getCategories().addAll(
+                        categoryDAO.getCategoriesForMovie(id)
+                );
+
+                movies.add(movie);
+
             }
         }
         return movies;
     }
-
-    public void addMovie(String title, double imdbRating, String filepath, double p_rating, String category) throws SQLException {
+    //Add Movie (Multi-Category)
+    public void addMovie(Movie movie) throws SQLException {
 
         try (Connection con = conMan.getConnection()) {
 
-            String sql = "INSERT INTO Movie (name, rating, filelink, p_rating) VALUES (?, ?, ?, ?)";
-            try (PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            String sql = """
+                INSERT INTO Movie (name, rating, filelink, p_rating)
+                VALUES (?, ?, ?, ?)
+            """;
 
-                ps.setString(1, title);
-                ps.setDouble(2, imdbRating);
-                ps.setString(3, filepath);
-                ps.setDouble(4, p_rating);
+            try (PreparedStatement ps =
+                         con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+                ps.setString(1, movie.getName());
+                ps.setDouble(2, movie.getRating());
+                ps.setString(3, movie.getFilelink());
+                ps.setDouble(4, movie.getPrating());
 
                 ps.executeUpdate();
 
@@ -65,16 +79,19 @@ public class MovieDAO {
                     if (keys.next()) {
                         movieId = keys.getInt(1);
                     } else {
-                        throw new SQLException("No generated key returned for inserted movie.");
+                        throw new SQLException("No generated key returned for movie.");
                     }
                 }
-
-                int categoryId = categoryDAO.getCategoryId(category);
-                catMovieDAO.instertMovie(categoryId, movieId);
+                // Insert category relations
+                for (Category category : movie.getCategories()) {
+                    int categoryId = categoryDAO.getCategoryId(category.getName());
+                    catMovieDAO.insertMovie(categoryId, movieId);
+                    ;
+                }
             }
         }
     }
-
+    //Get movie by filepath
     public int getMovieId(String filepath) throws SQLException {
         String sql = "SELECT id FROM Movie WHERE filelink = ?";
 
@@ -91,21 +108,21 @@ public class MovieDAO {
             }
         }
     }
-    public void removeMovie(int id){
+    //Remove movie
+    public void removeMovie(int id) {
         String sql = "DELETE FROM Movie WHERE id = ?";
-        try(Connection con = conMan.getConnection();){
+
+        try (Connection con = conMan.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            // Remove junction table entries first
             catMovieDAO.removeElement(id);
-            Statement stmt = con.createStatement();
-            PreparedStatement ps = con.prepareStatement(sql);
+
             ps.setInt(1, id);
             ps.executeUpdate();
-            ps.close();
-            stmt.close();
-        } catch (SQLServerException e) {
-            throw new RuntimeException(e);
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to delete movie", e);
         }
     }
-
 }

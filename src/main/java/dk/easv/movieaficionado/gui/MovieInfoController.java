@@ -1,38 +1,59 @@
 package dk.easv.movieaficionado.gui;
 
+import dk.easv.movieaficionado.be.Category;
+import dk.easv.movieaficionado.be.Movie;
+import dk.easv.movieaficionado.bll.Checker;
+import dk.easv.movieaficionado.bll.FileOps;
+import dk.easv.movieaficionado.dal.dao.CategoryDAO;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import dk.easv.movieaficionado.bll.*;
 
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MovieInfoController {
-    @FXML
-    public TextField txtFile;
-    @FXML
-    private Button btnExit;
-    @FXML
-    private TextField txtCategory;
-    @FXML
-    private TextField txtPersonal;
-    @FXML
-    private TextField txtImbd;
-    @FXML
-    private TextField txtTitle;
-    private String currentFile;
 
+    @FXML private TextField txtFile;
+    @FXML private TextField txtPersonal;
+    @FXML private TextField txtImbd;
+    @FXML private TextField txtTitle;
+    @FXML private Button btnExit;
+
+    // NEW: multi-category selection
+    @FXML private ListView<Category> categoryListView;
+
+    private String currentFile;
     private Runnable onMovieAdded;
+
+    private final FileOps fileOps = new FileOps();
+    private final Checker checker = new Checker();
+    private final CategoryDAO categoryDAO = new CategoryDAO();
 
     public void setOnMovieAdded(Runnable onMovieAdded) {
         this.onMovieAdded = onMovieAdded;
     }
 
+    @FXML
+    public void initialize() {
+        try {
+            categoryListView.setItems(
+                    FXCollections.observableArrayList(categoryDAO.getAllCategories())
+            );
+            categoryListView.getSelectionModel()
+                    .setSelectionMode(SelectionMode.MULTIPLE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-    FileOps fileOps = new FileOps();
-    Checker checker = new Checker();
+    @FXML
     public void btnSaveOnClick(ActionEvent actionEvent) {
         try {
             if (currentFile == null || currentFile.isBlank()) return;
@@ -44,17 +65,30 @@ public class MovieInfoController {
                 System.out.println("Rating must be between 0 and 10");
                 return;
             }
-            checker.addMovie(
+
+            Set<Category> selectedCategories =
+                    new HashSet<>(categoryListView.getSelectionModel().getSelectedItems());
+
+            if (selectedCategories.isEmpty()) {
+                System.out.println("A movie must have at least one category");
+                return;
+            }
+
+            Movie movie = new Movie(
                     txtTitle.getText().trim(),
-                    imdb,
                     currentFile,
-                    personal,
-                    txtCategory.getText().trim()
+                    selectedCategories
             );
+
+            movie.setRating(imdb);
+            movie.setPrating(personal);
+
+            checker.addMovie(movie);
+
             if (onMovieAdded != null) onMovieAdded.run();
+
             Stage stage = (Stage) btnExit.getScene().getWindow();
             stage.close();
-
 
         } catch (NumberFormatException e) {
             System.out.println("Ratings must be numbers!");
@@ -63,16 +97,15 @@ public class MovieInfoController {
         }
     }
 
+    @FXML
     public void btnExitOnClick(ActionEvent actionEvent) {
         Stage stage = (Stage) btnExit.getScene().getWindow();
-
         stage.close();
     }
 
+    @FXML
     public void btnSearchOnClick(ActionEvent actionEvent) {
-
         currentFile = fileOps.openFile();
         txtFile.setText(currentFile);
-
     }
 }

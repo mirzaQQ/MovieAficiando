@@ -2,6 +2,8 @@ package dk.easv.movieaficionado.be;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Movie {
     private int id;
@@ -10,6 +12,8 @@ public class Movie {
     private double p_rating;
     private String filelink;
     private LocalDate lastview;
+
+    private Set<Category> categories = new HashSet<>();
 
     //Constructor from the database
     public  Movie(int id, String name, double rating, double p_rating, String filelink, LocalDate lastview) {
@@ -22,11 +26,32 @@ public class Movie {
 
     }
     //Constructor for new movies
-    public Movie(String name, String filelink) {
+    public Movie(String name, String filelink, Set<Category> categories) {
+        if (categories == null || categories.isEmpty()) {
+            throw new IllegalArgumentException("Movie must have at least one category");
+        }
         this.name = name;
         this.filelink = filelink;
+        this.categories.addAll(categories);
     }
 
+    // Category handling
+    public Set<Category> getCategories() {
+        return categories;
+    }
+
+    public void addCategory(Category category) {
+        categories.add(category);
+    }
+
+    public void removeCategory(Category category) {
+        if (categories.size() == 1) {
+            throw new IllegalStateException("Movie must have at least one category");
+        }
+        categories.remove(category);
+    }
+
+    // existing getters/setters unchanged
     public int getId() {
         return id;
     }
