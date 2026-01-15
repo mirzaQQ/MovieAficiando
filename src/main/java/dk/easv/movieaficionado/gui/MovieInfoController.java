@@ -4,7 +4,6 @@ import dk.easv.movieaficionado.be.Category;
 import dk.easv.movieaficionado.be.Movie;
 import dk.easv.movieaficionado.bll.Checker;
 import dk.easv.movieaficionado.bll.FileOps;
-import dk.easv.movieaficionado.dal.dao.CategoryDAO;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -34,7 +33,7 @@ public class MovieInfoController {
 
     private final FileOps fileOps = new FileOps();
     private final Checker checker = new Checker();
-    private final CategoryDAO categoryDAO = new CategoryDAO();
+
 
     public void setOnMovieAdded(Runnable onMovieAdded) {
         this.onMovieAdded = onMovieAdded;
@@ -44,7 +43,7 @@ public class MovieInfoController {
     public void initialize() {
         try {
             categoryListView.setItems(
-                    FXCollections.observableArrayList(categoryDAO.getAllCategories())
+                    FXCollections.observableArrayList(checker.getAllCategories())
             );
             categoryListView.getSelectionModel()
                     .setSelectionMode(SelectionMode.MULTIPLE);

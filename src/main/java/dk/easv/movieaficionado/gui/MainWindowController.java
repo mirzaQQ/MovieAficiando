@@ -2,7 +2,6 @@ package dk.easv.movieaficionado.gui;
 
 import dk.easv.movieaficionado.MainApplication;
 import dk.easv.movieaficionado.be.Movie;
-import dk.easv.movieaficionado.dal.dao.MovieDAO;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -13,18 +12,16 @@ import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import java.sql.SQLException;
 import java.io.IOException;
-
 import dk.easv.movieaficionado.be.Category;
-import dk.easv.movieaficionado.dal.dao.CategoryDAO;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import dk.easv.movieaficionado.bll.DBOps;
-
-
-
+import dk.easv.movieaficionado.bll.Checker;
 
 
 public class MainWindowController {
+
+    private final Checker checker = new Checker();
 
     //Table view fields for viewing movies
     @FXML private TableView<Movie> movieTable;
@@ -32,8 +29,6 @@ public class MainWindowController {
     @FXML private TableColumn<Movie, Number> colImdb;
     @FXML private TableColumn<Movie, Number> colPersonal;
 
-    private final MovieDAO movieDAO = new MovieDAO();
-    private final DBOps ops = new DBOps();
 
 
 
@@ -41,7 +36,6 @@ public class MainWindowController {
     @FXML
     private ListView<Category> lstCategories;
 
-    private final CategoryDAO categoryDAO = new CategoryDAO();
 
     private String SelectedItem;
     Movies movieOps = new Movies();
@@ -79,7 +73,7 @@ public class MainWindowController {
 
     public void refreshCategories() {
         try {
-            lstCategories.getItems().setAll(categoryDAO.getAllCategories());
+            lstCategories.getItems().setAll(checker.getAllCategories());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -91,7 +85,7 @@ public class MainWindowController {
             return;
         }
         try {
-            categoryDAO.deleteCategory(selected.getId());
+            checker.deleteCategory(selected.getId());
             refreshCategories();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -99,7 +93,7 @@ public class MainWindowController {
     }
     public void refreshMovies() {
         try {
-            movieTable.getItems().setAll(movieDAO.getAllMovies());
+            movieTable.getItems().setAll(checker.getAllMovies());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -129,7 +123,7 @@ public class MainWindowController {
         if (selected == null) return;
 
         try{
-            ops.removeMovie(selected.getId());
+            checker.removeMovie(selected.getId());
             refreshMovies();
         }catch (Exception e){
             e.printStackTrace();
