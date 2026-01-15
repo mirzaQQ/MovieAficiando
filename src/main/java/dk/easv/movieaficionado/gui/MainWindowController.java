@@ -10,6 +10,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
+
+import java.awt.*;
+import java.io.File;
 import java.sql.SQLException;
 import java.io.IOException;
 import dk.easv.movieaficionado.be.Category;
@@ -165,13 +168,29 @@ public class MainWindowController {
     }
 
     public void btnPlayMovie(ActionEvent actionEvent) throws IOException {
+        File selected = new File(movieTable.getSelectionModel().getSelectedItem().getFilelink());
+        if (selected == null) return;
+        if(Desktop.isDesktopSupported()){
+            Desktop.getDesktop().open(selected);
 
-        movieOps.startCinema();
-    }
-
-    public String getSelectedItem() {
-        SelectedItem = "video.mp4";
-        return SelectedItem;
+        }
+        //cinemaViewController.movie();
+        /**
+         * try {
+         *             File file = new File(movie.getFileLink());
+         *
+         *             if(!file.exists()) {
+         *                 throw new IOException("File not found");
+         *             }
+         *
+         *             if (Desktop.isDesktopSupported()) {
+         *                 Desktop.getDesktop().open(file);
+         *             }
+         *         } catch (IOException e){
+         *             System.err.println("Error playing movie: " + e.getMessage());
+         *         }
+         *     }
+         * **/
     }
 
     // Filters movies by title
