@@ -62,15 +62,5 @@ public class Movies {
         stage.setScene(scene);
         stage.show();
     }
-
-    public void startCinema() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("gui/CinemaView.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-        Stage stage = new Stage();
-        stage.setTitle("Cinema");
-        stage.setScene(scene);
-        stage.show();
-
-    }
 }
 

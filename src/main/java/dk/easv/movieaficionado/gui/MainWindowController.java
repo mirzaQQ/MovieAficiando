@@ -174,23 +174,6 @@ public class MainWindowController {
             Desktop.getDesktop().open(selected);
 
         }
-        //cinemaViewController.movie();
-        /**
-         * try {
-         *             File file = new File(movie.getFileLink());
-         *
-         *             if(!file.exists()) {
-         *                 throw new IOException("File not found");
-         *             }
-         *
-         *             if (Desktop.isDesktopSupported()) {
-         *                 Desktop.getDesktop().open(file);
-         *             }
-         *         } catch (IOException e){
-         *             System.err.println("Error playing movie: " + e.getMessage());
-         *         }
-         *     }
-         * **/
     }
 
     // Filters movies by title
