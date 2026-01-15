@@ -15,9 +15,6 @@ public class MovieDAO {
     private final CategoryDAO categoryDAO = new CategoryDAO();
     private final CatMovieDAO catMovieDAO = new CatMovieDAO();
 
-    // =========================
-    // NEW: multi-category insert
-    // =========================
     public void addMovie(Movie movie) throws SQLException {
 
         if (movie.getCategories().isEmpty()) {
@@ -53,9 +50,6 @@ public class MovieDAO {
         }
     }
 
-    // =========================
-    // LEGACY method (temporary)
-    // =========================
     @Deprecated
     public int addMovie(String title,
                         double imdbRating,
@@ -84,9 +78,35 @@ public class MovieDAO {
         }
     }
 
-    // =========================
-    // LOAD movies
-    // =========================
+    public void updateMovie(Movie movie) throws SQLException {
+
+        if (movie.getCategories().isEmpty()) {
+            throw new IllegalArgumentException("Movie must have at least one category");
+        }
+
+        String sql = "UPDATE Movie SET name = ?, rating = ?, filelink = ?, p_rating = ? WHERE id = ?";
+
+        try (Connection con = conMan.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, movie.getName());
+            ps.setDouble(2, movie.getRating());
+            ps.setString(3, movie.getFilelink());
+            ps.setDouble(4, movie.getPrating());
+            ps.setInt(5, movie.getId());
+            ps.executeUpdate();
+
+            // přepíše vazby kategorií (reset + znovu vložit)
+            catMovieDAO.removeElement(movie.getId());
+
+            for (Category category : movie.getCategories()) {
+                int categoryId = categoryDAO.getCategoryId(category.getName());
+                catMovieDAO.insertMovie(categoryId, movie.getId());
+            }
+        }
+    }
+
+
     public List<Movie> getAllMovies() throws SQLException {
 
         String sql = "SELECT id, name, rating, p_rating, filelink, lastview FROM Movie ORDER BY name";
@@ -138,6 +158,7 @@ public class MovieDAO {
             return rs.getInt("id");
         }
     }
+
 
     public void removeMovie(int id) throws SQLException {
 

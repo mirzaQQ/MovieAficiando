@@ -25,19 +25,21 @@ public class MovieInfoController {
     @FXML private TextField txtTitle;
     @FXML private Button btnExit;
 
+
     // NEW: multi-category selection
     @FXML private ListView<Category> categoryListView;
 
     private String currentFile;
     private Runnable onMovieAdded;
+    private Movie movieToEdit = null;
 
     private final FileOps fileOps = new FileOps();
     private final Checker checker = new Checker();
 
 
-    public void setOnMovieAdded(Runnable onMovieAdded) {
-        this.onMovieAdded = onMovieAdded;
-    }
+
+
+
 
     @FXML
     public void initialize() {
@@ -49,6 +51,28 @@ public class MovieInfoController {
                     .setSelectionMode(SelectionMode.MULTIPLE);
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void setOnMovieAdded(Runnable onMovieAdded) {
+        this.onMovieAdded = onMovieAdded;
+    }
+
+    //This method fills out the information about a movie that the user wants to edit
+    public void setMovieToEdit(Movie movie) {
+        this.movieToEdit = movie;
+
+        txtTitle.setText(movie.getName());
+        txtImbd.setText(String.valueOf(movie.getRating()));
+        txtPersonal.setText(String.valueOf(movie.getPrating()));
+        currentFile = movie.getFilelink();
+        txtFile.setText(currentFile);
+
+        categoryListView.getSelectionModel().clearSelection();
+        for (Category c : categoryListView.getItems()) {
+            if (movie.getCategories().stream().anyMatch(mc -> mc.getName().equals(c.getName()))) {
+                categoryListView.getSelectionModel().select(c);
+            }
         }
     }
 
@@ -73,16 +97,21 @@ public class MovieInfoController {
                 return;
             }
 
-            Movie movie = new Movie(
-                    txtTitle.getText().trim(),
-                    currentFile,
-                    selectedCategories
-            );
+            String title = txtTitle.getText().trim();
 
-            movie.setRating(imdb);
-            movie.setPrating(personal);
-
-            checker.addMovie(movie);
+            if (movieToEdit == null) {
+                //Add
+                Movie movie = new Movie(title, currentFile, selectedCategories);
+                movie.setRating(imdb);
+                movie.setPrating(personal);
+                checker.addMovie(movie);
+            } else {
+                //Edit
+                Movie movie = new Movie(movieToEdit.getId(), title, currentFile, selectedCategories);
+                movie.setRating(imdb);
+                movie.setPrating(personal);
+                checker.updateMovie(movie);
+            }
 
             if (onMovieAdded != null) onMovieAdded.run();
 
@@ -95,6 +124,9 @@ public class MovieInfoController {
             e.printStackTrace();
         }
     }
+
+
+
 
     @FXML
     public void btnExitOnClick(ActionEvent actionEvent) {

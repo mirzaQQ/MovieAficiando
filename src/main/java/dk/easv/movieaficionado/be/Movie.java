@@ -35,6 +35,17 @@ public class Movie {
         this.categories.addAll(categories);
     }
 
+    public Movie(int id, String name, String filelink, Set<Category> categories) {
+        if (categories == null || categories.isEmpty()) {
+            throw new IllegalArgumentException("Movie must have at least one category");
+        }
+        this.id = id;
+        this.name = name;
+        this.filelink = filelink;
+        this.categories.addAll(categories);
+    }
+
+
     // Category handling
     public Set<Category> getCategories() {
         return categories;

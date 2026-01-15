@@ -117,9 +117,21 @@ public class MainWindowController {
         stage.show();
     }
 
-
     public void btnEditMovie(ActionEvent actionEvent) throws IOException {
-        movieOps.EditMovie();
+        Movie selected = movieTable.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+
+        FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("gui/MovieInfo.fxml"));
+        Scene scene = new Scene(loader.load());
+
+        MovieInfoController controller = loader.getController();
+        controller.setOnMovieAdded(this::refreshMovies);
+        controller.setMovieToEdit(selected);
+
+        Stage stage = new Stage();
+        stage.setTitle("Edit Movie");
+        stage.setScene(scene);
+        stage.show();
     }
 
     public void btnRemoveMovie(ActionEvent actionEvent) {
