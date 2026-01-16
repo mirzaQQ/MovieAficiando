@@ -1,5 +1,6 @@
 package dk.easv.movieaficionado.dal.dao;
 
+import com.microsoft.sqlserver.jdbc.SQLServerException;
 import dk.easv.movieaficionado.be.Category;
 import dk.easv.movieaficionado.be.Movie;
 import dk.easv.movieaficionado.dal.ConnectionManager;
@@ -8,6 +9,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
 
 public class MovieDAO {
 
@@ -206,5 +208,25 @@ public class MovieDAO {
                 }
             }
             return movies;
+    }
+    public void insertDate(String filepath){
+        LocalDateTime now = LocalDateTime.now();
+
+        String sql = "UPDATE Movie SET lastview = ? WHERE filelink = ?";
+        try(Connection con = conMan.getConnection();){
+            Statement stmt = con.createStatement();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setObject(1, now);
+            ps.setString(2, filepath);
+            ps.executeUpdate();
+            ps.close();
+            stmt.close();
+
+
+        } catch (SQLServerException e) {
+            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

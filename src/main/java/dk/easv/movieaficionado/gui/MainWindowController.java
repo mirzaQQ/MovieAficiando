@@ -2,6 +2,7 @@ package dk.easv.movieaficionado.gui;
 
 import dk.easv.movieaficionado.MainApplication;
 import dk.easv.movieaficionado.be.Movie;
+import dk.easv.movieaficionado.bll.FileOps;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -219,12 +220,8 @@ public class MainWindowController {
     }
 
     public void btnPlayMovie(ActionEvent actionEvent) throws IOException {
-        File selected = new File(movieTable.getSelectionModel().getSelectedItem().getFilelink());
-        if (selected == null) return;
-        if(Desktop.isDesktopSupported()){
-            Desktop.getDesktop().open(selected);
-
-        }
+        FileOps fileOps = new FileOps();
+        fileOps.playMovie(movieTable.getSelectionModel().getSelectedItem().getFilelink());
     }
 
     private void applySorting() {
