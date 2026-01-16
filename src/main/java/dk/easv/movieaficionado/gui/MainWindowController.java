@@ -28,6 +28,9 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import java.util.Comparator;
+import javafx.scene.control.Alert;
+import dk.easv.movieaficionado.bll.exceptions.MovieCleanupWarningException;
+
 
 
 
@@ -96,6 +99,19 @@ public class MainWindowController {
         movieTable.setItems(sortedMovies);
 
         refreshMovies();
+        try {
+            checker.checkForCleanupWarning();
+        } catch (MovieCleanupWarningException e) {
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Cleanup reminder");
+            alert.setHeaderText("Movie cleanup recommended");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         txtTitleFilter.textProperty().addListener((obs, oldText, newText) -> applyFilters());
         sliderImdb.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
