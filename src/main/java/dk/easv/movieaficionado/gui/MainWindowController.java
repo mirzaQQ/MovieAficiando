@@ -34,8 +34,6 @@ public class MainWindowController {
 
     private final Checker checker = new Checker();
     private final DBOps ops = new DBOps();
-    private ObservableList<Movie> sliderBaseList;
-
 
     //Table view fields for viewing movies
     @FXML private TableView<Movie> movieTable;
@@ -43,7 +41,6 @@ public class MainWindowController {
     @FXML private TableColumn<Movie, Number> colImdb;
     @FXML private TableColumn<Movie, Number> colPersonal;
     @FXML private TableColumn<Movie, String> colCategories;
-
 
     // UI controls
     @FXML private TextField txtTitleFilter;
@@ -76,16 +73,12 @@ public class MainWindowController {
 
     @FXML
     public void initialize() {
+
         refreshCategories();
-        colTitle.setCellValueFactory(data ->
-                new SimpleStringProperty(data.getValue().getName())
-        );
-        colImdb.setCellValueFactory(data ->
-                new SimpleDoubleProperty(data.getValue().getRating())
-        );
-        colPersonal.setCellValueFactory(data ->
-                new SimpleDoubleProperty(data.getValue().getPrating())
-        );
+
+        colTitle.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getName()));
+        colImdb.setCellValueFactory(data -> new SimpleDoubleProperty(data.getValue().getRating()));
+        colPersonal.setCellValueFactory(data -> new SimpleDoubleProperty(data.getValue().getPrating()));
         colCategories.setCellValueFactory(data -> {
             Movie m = data.getValue();
             String cats = m.getCategories().stream()
@@ -96,26 +89,18 @@ public class MainWindowController {
             return new SimpleStringProperty(cats);
         });
 
+        masterMovieList = FXCollections.observableArrayList();
+        filteredMovies = new FilteredList<>(masterMovieList, m -> true);
+        sortedMovies = new SortedList<>(filteredMovies);
+        movieTable.setItems(sortedMovies);
+
         refreshMovies();
 
-        sliderImdb.setOnMousePressed(e -> {
-            sliderBaseList = FXCollections.observableArrayList(movieTable.getItems());
-        });
+        txtTitleFilter.textProperty().addListener((obs, oldText, newText) -> applyFilters());
+        sliderImdb.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
+        lstCategories.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> applyFilters());
 
-        // filtering logic
-        sliderImdb.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (sliderBaseList == null) return;
-
-            double minRating = newVal.doubleValue();
-
-            movieTable.getItems().setAll(
-                    sliderBaseList.filtered(movie ->
-                            movie.getRating() >= minRating
-                    )
-            );
-        });
-
-        cmbSortBy.getItems().addAll(
+        cmbSortBy.getItems().setAll(
                 "Title (A–Z)",
                 "IMDb Rating (High → Low)",
                 "IMDb Rating (Low → High)",
@@ -123,14 +108,12 @@ public class MainWindowController {
                 "Personal Rating (Low → High)",
                 "Category (A–Z)"
         );
-
         cmbSortBy.setOnAction(e -> applySorting());
 
-
-        txtTitleFilter.textProperty().addListener((obs, oldText, newText) -> {
-            filterByTitle(newText);
-        });
+        applyFilters();
+        applySorting();
     }
+
 
     public void refreshCategories() {
         try {
@@ -167,29 +150,28 @@ public class MainWindowController {
 
         alert.showAndWait().ifPresent(response -> {
             if (response == btnClear) {
-
-                // Reset UI controls
+                txtTitleFilter.clear();
                 sliderImdb.setValue(0);
                 lstCategories.getSelectionModel().clearSelection();
                 cmbSortBy.getSelectionModel().clearSelection();
 
-                // Restore table using existing title search logic
-                filterByTitle(txtTitleFilter.getText());
-
-                // Reset slider snapshot
-                sliderBaseList = FXCollections.observableArrayList(movieTable.getItems());
+                applyFilters();
+                applySorting();
             }
         });
     }
 
 
+
     public void refreshMovies() {
         try {
-            movieTable.getItems().setAll(checker.getAllMovies());
+            masterMovieList.setAll(checker.getAllMovies());
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+
 
     public void btnAddMovie(ActionEvent actionEvent) throws IOException {
         FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("gui/MovieInfo.fxml"));
@@ -245,22 +227,13 @@ public class MainWindowController {
         }
     }
 
-    // Filters movies by title
-    private void filterByTitle(String text) {
-
-        try {
-            // Ask business layer to search movies
-            movieTable.getItems().setAll(
-                    ops.searchMoviesByTitle(text)
-            );
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private void applySorting() {
         String selected = cmbSortBy.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
+
+        if (selected == null) {
+            sortedMovies.setComparator(null);
+            return;
+        }
 
         Comparator<Movie> comparator = null;
 
@@ -289,10 +262,37 @@ public class MainWindowController {
                                 .orElse(""),
                         String.CASE_INSENSITIVE_ORDER
                 );
+                break;
         }
 
-        if (comparator != null) {
-            FXCollections.sort(movieTable.getItems(), comparator);
-        }
+        sortedMovies.setComparator(comparator);
     }
+
+    //Something like a master filter
+    private void applyFilters() {
+        String title = txtTitleFilter.getText() == null ? "" : txtTitleFilter.getText().trim().toLowerCase();
+        double minImdb = sliderImdb.getValue();
+
+        Category selectedCategory = lstCategories.getSelectionModel().getSelectedItem();
+
+        filteredMovies.setPredicate(movie -> {
+            // Title filter
+            boolean matchesTitle = title.isEmpty()
+                    || movie.getName().toLowerCase().contains(title);
+
+            // Min IMDB filter
+            boolean matchesImdb = movie.getRating() >= minImdb;
+
+            // Category filter
+            boolean matchesCategory = true;
+            if (selectedCategory != null) {
+                matchesCategory = movie.getCategories().stream()
+                        .anyMatch(c -> c.getName().equals(selectedCategory.getName()));
+            }
+
+            return matchesTitle && matchesImdb && matchesCategory;
+        });
+        applySorting();
+    }
+
 }
