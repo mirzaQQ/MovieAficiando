@@ -44,21 +44,9 @@ public class Movie {
         this.categories.addAll(categories);
     }
 
-
     // Category handling
     public Set<Category> getCategories() {
         return categories;
-    }
-
-    public void addCategory(Category category) {
-        categories.add(category);
-    }
-
-    public void removeCategory(Category category) {
-        if (categories.size() == 1) {
-            throw new IllegalStateException("Movie must have at least one category");
-        }
-        categories.remove(category);
     }
 
     // existing getters/setters unchanged
@@ -89,12 +77,7 @@ public class Movie {
     public void setPrating(double p_rating) {
         this.p_rating = p_rating;
     }
-    public void setFilelink(String filelink) {
-        this.filelink = filelink;
-    }
-    public void setLastview(LocalDate lastview) {
-        this.lastview = lastview;
-    }
+
     @Override
     public String toString() {
         return name;

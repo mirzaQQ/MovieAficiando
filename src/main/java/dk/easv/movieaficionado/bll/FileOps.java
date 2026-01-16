@@ -19,15 +19,6 @@ public class FileOps {
         return null;
     }
 
-    public boolean checkFile(String fileName) {
-        String regex = "\\\\" ;
-        String[] path = fileName.split(regex);
-        String ChoosenFile =  path[path.length - 1];
-        if(ChoosenFile.contains(".mp4") || ChoosenFile.contains(".mpeg4")) {
-            return true;
-        }
-        return false;
-    }
 
     public void playMovie(String path) throws IOException {
         if (path == null || path.isBlank()) return;

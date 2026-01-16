@@ -40,29 +40,6 @@ public class CategoryDAO {
 
     }
 
-    public Category getCategoryByName(String name) throws SQLException {
-
-        String sql = "SELECT * FROM Category WHERE name = ?";
-
-        try (Connection con = conMan.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, name);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return new Category(
-                        rs.getInt("id"),
-                        rs.getString("name")
-                );
-            }
-
-            return null;
-
-        } catch (SQLException e) {
-            throw new SQLException(e);
-        }
-    }
 
     public List<Category> getAllCategories() throws SQLException {
         String sql = "SELECT * FROM Category ORDER BY name";

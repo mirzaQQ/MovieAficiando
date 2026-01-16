@@ -14,14 +14,7 @@ import java.time.LocalDate;
 
 public class Checker {
 
-    public List<Movie> getMoviesNotOpenedForTwoYears() throws SQLException {
-        List<Movie> movies = movieDAO.getAllMovies();
-        LocalDate twoYearsAgo = LocalDate.now().minusYears(2);
 
-        return movies.stream()
-                .filter(m -> m.getLastview() == null || m.getLastview().isBefore(twoYearsAgo))
-                .toList();
-    }
 
     public void checkForCleanupWarning() throws MovieCleanupWarningException, SQLException {
 
@@ -114,10 +107,7 @@ public class Checker {
         );
     }
 
-    //sends the search text to the database and returns matching
-    public List<Movie> searchMoviesByTitle(String text) throws SQLException {
-        return movieDAO.searchByTitle(text);
-    }
+
 
     public void updateMovie(Movie movie) throws SQLException {
     movieDAO.updateMovie(movie);
