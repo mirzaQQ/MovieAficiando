@@ -1,12 +1,19 @@
 package dk.easv.movieaficionado.gui;
 
 import dk.easv.movieaficionado.MainApplication;
+import dk.easv.movieaficionado.be.Category;
 import dk.easv.movieaficionado.be.Movie;
+import dk.easv.movieaficionado.bll.Checker;
 import dk.easv.movieaficionado.bll.FileOps;
+import dk.easv.movieaficionado.bll.exceptions.MovieCleanupWarningException;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,33 +21,14 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-import java.awt.*;
-import java.io.File;
-import java.sql.SQLException;
 import java.io.IOException;
-import java.util.Comparator;
-
-import dk.easv.movieaficionado.be.Category;
-import javafx.fxml.FXML;
-import dk.easv.movieaficionado.bll.Checker;
-import dk.easv.movieaficionado.bll.DBOps;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
-import java.util.Comparator;
-import javafx.scene.control.Alert;
-import dk.easv.movieaficionado.bll.exceptions.MovieCleanupWarningException;
-
-
-
+import java.sql.SQLException;
 
 public class MainWindowController {
 
     private final Checker checker = new Checker();
-    private final DBOps ops = new DBOps();
 
-    //Table view fields for viewing movies
+    // Table view fields for viewing movies
     @FXML private TableView<Movie> movieTable;
     @FXML private TableColumn<Movie, String> colTitle;
     @FXML private TableColumn<Movie, Number> colImdb;
@@ -58,14 +46,9 @@ public class MainWindowController {
     private FilteredList<Movie> filteredMovies;
     private SortedList<Movie> sortedMovies;
 
-
-
-    private String SelectedItem;
-    Movies movieOps = new Movies();
-
     public void btnAddCategory(ActionEvent actionEvent) throws IOException {
         FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("gui/AddCategory.fxml"));
-        Scene scene = new Scene(loader.load()); // load musí být před getController()
+        Scene scene = new Scene(loader.load());
 
         AddCategoryController controller = loader.getController();
         controller.setOnCategoryAdded(this::refreshCategories);
@@ -97,37 +80,38 @@ public class MainWindowController {
         masterMovieList = FXCollections.observableArrayList();
         filteredMovies = new FilteredList<>(masterMovieList, m -> true);
         sortedMovies = new SortedList<>(filteredMovies);
+
         movieTable.setItems(sortedMovies);
         sortedMovies.comparatorProperty().bind(movieTable.comparatorProperty());
 
-
         refreshMovies();
+
+        // Cleanup popup
         try {
             checker.checkForCleanupWarning();
         } catch (MovieCleanupWarningException e) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Cleanup reminder");
+            alert.setHeaderText("Movie cleanup recommended");
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Cleanup reminder");
-        alert.setHeaderText("Movie cleanup recommended");
+            TextArea area = new TextArea(e.getMessage());
+            area.setEditable(false);
+            area.setWrapText(true);
+            area.setMaxWidth(Double.MAX_VALUE);
+            area.setMaxHeight(Double.MAX_VALUE);
 
-        TextArea area = new TextArea(e.getMessage());
-        area.setEditable(false);
-        area.setWrapText(true);
-        area.setMaxWidth(Double.MAX_VALUE);
-        area.setMaxHeight(Double.MAX_VALUE);
-
-        alert.getDialogPane().setContent(area);
-        alert.showAndWait();
-
-    }
- catch (SQLException e) {
+            alert.getDialogPane().setContent(area);
+            alert.showAndWait();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
+        // Filters listeners
         txtTitleFilter.textProperty().addListener((obs, oldText, newText) -> applyFilters());
         sliderImdb.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
         lstCategories.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> applyFilters());
 
+        // Combo sorting
         cmbSortBy.getItems().setAll(
                 "Title (A–Z)",
                 "IMDb Rating (High → Low)",
@@ -142,7 +126,6 @@ public class MainWindowController {
         applySorting();
     }
 
-
     public void refreshCategories() {
         try {
             lstCategories.getItems().setAll(checker.getAllCategories());
@@ -150,12 +133,12 @@ public class MainWindowController {
             e.printStackTrace();
         }
     }
+
     @FXML
     public void btnRemoveCategory(ActionEvent actionEvent) {
         Category selected = lstCategories.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            return;
-        }
+        if (selected == null) return;
+
         try {
             checker.deleteCategory(selected.getId());
             refreshCategories();
@@ -163,6 +146,7 @@ public class MainWindowController {
             e.printStackTrace();
         }
     }
+
     @FXML
     public void btnClearFilters(ActionEvent actionEvent) {
 
@@ -197,8 +181,6 @@ public class MainWindowController {
         }
     }
 
-
-
     public void btnAddMovie(ActionEvent actionEvent) throws IOException {
         FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("gui/MovieInfo.fxml"));
         Scene scene = new Scene(loader.load());
@@ -230,30 +212,35 @@ public class MainWindowController {
     }
 
     public void btnRemoveMovie(ActionEvent actionEvent) {
-       Movie selected = movieTable.getSelectionModel().getSelectedItem();
-
+        Movie selected = movieTable.getSelectionModel().getSelectedItem();
         if (selected == null) return;
 
-        try{
+        try {
             checker.removeMovie(selected.getId());
             refreshMovies();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        //movieOps.RemovedMovie(item);
     }
 
     public void btnPlayMovie(ActionEvent actionEvent) throws IOException {
+        Movie selected = movieTable.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+
         FileOps fileOps = new FileOps();
-        fileOps.playMovie(movieTable.getSelectionModel().getSelectedItem().getFilelink());
+        fileOps.playMovie(selected.getFilelink());
+
+        try {
+            checker.markMovieAsViewed(selected.getFilelink());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void applySorting() {
         String selected = cmbSortBy.getSelectionModel().getSelectedItem();
 
         movieTable.getSortOrder().clear();
-
         if (selected == null) return;
 
         TableColumn<Movie, ?> col = null;
@@ -293,8 +280,6 @@ public class MainWindowController {
         }
     }
 
-
-    //Something like a master filter
     private void applyFilters() {
         String title = txtTitleFilter.getText() == null ? "" : txtTitleFilter.getText().trim().toLowerCase();
         double minImdb = sliderImdb.getValue();
@@ -302,9 +287,7 @@ public class MainWindowController {
         Category selectedCategory = lstCategories.getSelectionModel().getSelectedItem();
 
         filteredMovies.setPredicate(movie -> {
-            boolean matchesTitle = title.isEmpty()
-                    || movie.getName().toLowerCase().contains(title);
-
+            boolean matchesTitle = title.isEmpty() || movie.getName().toLowerCase().contains(title);
             boolean matchesImdb = movie.getRating() >= minImdb;
 
             boolean matchesCategory = true;
@@ -316,6 +299,4 @@ public class MainWindowController {
             return matchesTitle && matchesImdb && matchesCategory;
         });
     }
-
-
 }

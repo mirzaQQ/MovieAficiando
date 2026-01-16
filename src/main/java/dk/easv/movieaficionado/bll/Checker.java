@@ -6,11 +6,9 @@ import dk.easv.movieaficionado.dal.dao.CategoryDAO;
 import dk.easv.movieaficionado.dal.dao.MovieDAO;
 import java.sql.SQLException;
 import dk.easv.movieaficionado.be.Category;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.time.LocalDate;
-import java.util.List;
+
 
 
 
@@ -116,14 +114,17 @@ public class Checker {
         );
     }
 
-    // sends the search text to the database and returns matching
+    //sends the search text to the database and returns matching
     public List<Movie> searchMoviesByTitle(String text) throws SQLException {
         return movieDAO.searchByTitle(text);
     }
 
-public void updateMovie(Movie movie) throws SQLException {
+    public void updateMovie(Movie movie) throws SQLException {
     movieDAO.updateMovie(movie);
-}
+    }
+    public void markMovieAsViewed(String filepath) throws SQLException {
+        movieDAO.insertDate(filepath);
+    }
 
 
 

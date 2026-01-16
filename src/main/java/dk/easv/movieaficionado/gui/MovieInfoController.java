@@ -12,7 +12,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,7 +24,6 @@ public class MovieInfoController {
     @FXML private TextField txtTitle;
     @FXML private Button btnExit;
 
-
     // NEW: multi-category selection
     @FXML private ListView<Category> categoryListView;
 
@@ -35,11 +33,6 @@ public class MovieInfoController {
 
     private final FileOps fileOps = new FileOps();
     private final Checker checker = new Checker();
-
-
-
-
-
 
     @FXML
     public void initialize() {
@@ -124,9 +117,6 @@ public class MovieInfoController {
             e.printStackTrace();
         }
     }
-
-
-
 
     @FXML
     public void btnExitOnClick(ActionEvent actionEvent) {
