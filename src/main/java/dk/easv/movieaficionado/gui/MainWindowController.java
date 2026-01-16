@@ -10,6 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -97,19 +98,29 @@ public class MainWindowController {
         filteredMovies = new FilteredList<>(masterMovieList, m -> true);
         sortedMovies = new SortedList<>(filteredMovies);
         movieTable.setItems(sortedMovies);
+        sortedMovies.comparatorProperty().bind(movieTable.comparatorProperty());
+
 
         refreshMovies();
         try {
             checker.checkForCleanupWarning();
         } catch (MovieCleanupWarningException e) {
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Cleanup reminder");
-            alert.setHeaderText("Movie cleanup recommended");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Cleanup reminder");
+        alert.setHeaderText("Movie cleanup recommended");
 
-        } catch (SQLException e) {
+        TextArea area = new TextArea(e.getMessage());
+        area.setEditable(false);
+        area.setWrapText(true);
+        area.setMaxWidth(Double.MAX_VALUE);
+        area.setMaxHeight(Double.MAX_VALUE);
+
+        alert.getDialogPane().setContent(area);
+        alert.showAndWait();
+
+    }
+ catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -158,7 +169,7 @@ public class MainWindowController {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Clear Filters");
         alert.setHeaderText("Clear all filters?");
-        alert.setContentText("This will reset all filter settings and sorting.");
+        alert.setContentText("This will reset all filters and sorting.");
 
         ButtonType btnClear = new ButtonType("Clear");
         ButtonType btnCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -177,8 +188,6 @@ public class MainWindowController {
             }
         });
     }
-
-
 
     public void refreshMovies() {
         try {
@@ -243,43 +252,47 @@ public class MainWindowController {
     private void applySorting() {
         String selected = cmbSortBy.getSelectionModel().getSelectedItem();
 
-        if (selected == null) {
-            sortedMovies.setComparator(null);
-            return;
-        }
+        movieTable.getSortOrder().clear();
 
-        Comparator<Movie> comparator = null;
+        if (selected == null) return;
+
+        TableColumn<Movie, ?> col = null;
+        boolean desc = false;
 
         switch (selected) {
             case "Title (A–Z)":
-                comparator = Comparator.comparing(Movie::getName, String.CASE_INSENSITIVE_ORDER);
+                col = colTitle;
+                desc = false;
                 break;
             case "IMDb Rating (High → Low)":
-                comparator = Comparator.comparingDouble(Movie::getRating).reversed();
+                col = colImdb;
+                desc = true;
                 break;
             case "IMDb Rating (Low → High)":
-                comparator = Comparator.comparingDouble(Movie::getRating);
+                col = colImdb;
+                desc = false;
                 break;
             case "Personal Rating (High → Low)":
-                comparator = Comparator.comparingDouble(Movie::getPrating).reversed();
+                col = colPersonal;
+                desc = true;
                 break;
             case "Personal Rating (Low → High)":
-                comparator = Comparator.comparingDouble(Movie::getPrating);
+                col = colPersonal;
+                desc = false;
                 break;
             case "Category (A–Z)":
-                comparator = Comparator.comparing(
-                        movie -> movie.getCategories().stream()
-                                .map(Category::getName)
-                                .sorted()
-                                .reduce((a, b) -> a + ", " + b)
-                                .orElse(""),
-                        String.CASE_INSENSITIVE_ORDER
-                );
+                col = colCategories;
+                desc = false;
                 break;
         }
 
-        sortedMovies.setComparator(comparator);
+        if (col != null) {
+            col.setSortType(desc ? TableColumn.SortType.DESCENDING : TableColumn.SortType.ASCENDING);
+            movieTable.getSortOrder().add(col);
+            movieTable.sort();
+        }
     }
+
 
     //Something like a master filter
     private void applyFilters() {
@@ -289,14 +302,11 @@ public class MainWindowController {
         Category selectedCategory = lstCategories.getSelectionModel().getSelectedItem();
 
         filteredMovies.setPredicate(movie -> {
-            // Title filter
             boolean matchesTitle = title.isEmpty()
                     || movie.getName().toLowerCase().contains(title);
 
-            // Min IMDB filter
             boolean matchesImdb = movie.getRating() >= minImdb;
 
-            // Category filter
             boolean matchesCategory = true;
             if (selectedCategory != null) {
                 matchesCategory = movie.getCategories().stream()
@@ -305,7 +315,7 @@ public class MainWindowController {
 
             return matchesTitle && matchesImdb && matchesCategory;
         });
-        applySorting();
     }
+
 
 }

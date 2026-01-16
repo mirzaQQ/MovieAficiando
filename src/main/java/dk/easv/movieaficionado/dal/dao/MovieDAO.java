@@ -122,9 +122,9 @@ public class MovieDAO {
             while (rs.next()) {
 
                 LocalDate lastview = null;
-                Date d = rs.getDate("lastview");
-                if (d != null) {
-                    lastview = d.toLocalDate();
+                Timestamp ts = rs.getTimestamp("lastview");
+                if (ts != null) {
+                    lastview = ts.toLocalDateTime().toLocalDate();
                 }
 
                 Movie movie = new Movie(
@@ -147,6 +147,49 @@ public class MovieDAO {
         return movies;
     }
 
+    public List<Movie> getMoviesLastViewedBefore(LocalDateTime cutoff) throws SQLException {
+        String sql = """
+        SELECT id, name, rating, p_rating, filelink, lastview
+        FROM Movie
+        WHERE lastview IS NOT NULL
+          AND lastview < ?
+        ORDER BY lastview ASC
+    """;
+
+        List<Movie> movies = new ArrayList<>();
+
+        try (Connection con = conMan.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setTimestamp(1, Timestamp.valueOf(cutoff));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    LocalDate lastview = null;
+                    Timestamp ts = rs.getTimestamp("lastview");
+                    if (ts != null) {
+                        lastview = ts.toLocalDateTime().toLocalDate();
+                    }
+
+                    Movie movie = new Movie(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getDouble("rating"),
+                            rs.getDouble("p_rating"),
+                            rs.getString("filelink"),
+                            lastview
+                    );
+
+                    movie.getCategories().addAll(
+                            categoryDAO.getCategoriesForMovie(movie.getId())
+                    );
+
+                    movies.add(movie);
+                }
+            }
+        }
+        return movies;
+    }
     public int getMovieId(String filepath) throws SQLException {
 
         String sql = "SELECT id FROM Movie WHERE filelink = ?";
@@ -189,8 +232,10 @@ public class MovieDAO {
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
                     LocalDate lastview = null;
-                    Date d = rs.getDate("lastview");
-                    if (d != null) lastview = d.toLocalDate();
+                    Timestamp ts = rs.getTimestamp("lastview");
+                    if (ts != null) {
+                        lastview = ts.toLocalDateTime().toLocalDate();
+                    }
 
                     Movie movie = new Movie(
                             rs.getInt("id"),

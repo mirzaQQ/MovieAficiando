@@ -6,6 +6,8 @@ import dk.easv.movieaficionado.dal.dao.CategoryDAO;
 import dk.easv.movieaficionado.dal.dao.MovieDAO;
 import java.sql.SQLException;
 import dk.easv.movieaficionado.be.Category;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.time.LocalDate;
 import java.util.List;
@@ -14,25 +16,59 @@ import java.util.List;
 
 public class Checker {
 
-    public void checkForCleanupWarning()
-            throws MovieCleanupWarningException, SQLException {
+    public List<Movie> getMoviesNotOpenedForTwoYears() throws SQLException {
+        List<Movie> movies = movieDAO.getAllMovies();
+        LocalDate twoYearsAgo = LocalDate.now().minusYears(2);
+
+        return movies.stream()
+                .filter(m -> m.getLastview() == null || m.getLastview().isBefore(twoYearsAgo))
+                .toList();
+    }
+
+    public void checkForCleanupWarning() throws MovieCleanupWarningException, SQLException {
 
         List<Movie> movies = movieDAO.getAllMovies();
         LocalDate twoYearsAgo = LocalDate.now().minusYears(2);
 
-        for (Movie m : movies) {
+        // Movies not played for 2+ years (ONLY lastview != null)
+        List<Movie> oldMovies = movies.stream()
+                .filter(m -> m.getLastview() != null && m.getLastview().isBefore(twoYearsAgo))
+                .sorted((a, b) -> a.getLastview().compareTo(b.getLastview()))
+                .toList();
 
-            if (m.getPrating() < 6 &&
-                    (m.getLastview() == null ||
-                            m.getLastview().isBefore(twoYearsAgo))) {
+        boolean hasLowPersonal = movies.stream()
+                .anyMatch(m -> m.getPrating() < 6);
 
-                throw new MovieCleanupWarningException(
-                        "Remember to delete movies with a personal rating under 6\n" +
-                                "And those that have not been opened for more than 2 years."
-                );
+        if (!oldMovies.isEmpty()) {
+            StringBuilder msg = new StringBuilder();
+            msg.append("Movies last played more than 2 years ago:\n\n");
+
+            for (Movie m : oldMovies) {
+                msg.append("• ")
+                        .append(m.getName())
+                        .append(" (")
+                        .append(m.getLastview())
+                        .append(")\n");
             }
+
+            if (hasLowPersonal) {
+                msg.append("\n");
+                msg.append("Don't forget to remove movies with personal rating below 6.");
+            }
+
+            throw new MovieCleanupWarningException(msg.toString());
+        }
+
+        if (hasLowPersonal) {
+            throw new MovieCleanupWarningException(
+                    "Don't forget to remove movies with personal rating below 6."
+            );
         }
     }
+
+
+
+
 
 
     public List<Category> getAllCategories() throws SQLException {
